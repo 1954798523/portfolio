@@ -723,6 +723,48 @@ function ContactPage() {
   );
 }
 
+// ====== ANIMATED NUMBER ======
+function AnimatedNumber({ end, suffix = "", lbl, delay = 0 }) {
+  const [val, setVal] = useState(0);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    const startAt = performance.now() + delay * 1000;
+    const duration = 1200;
+    function tick() {
+      const elapsed = performance.now() - startAt;
+      if (elapsed < 0) { requestAnimationFrame(tick); return; }
+      const t = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setVal(Math.round(end * eased));
+      if (t < 1) requestAnimationFrame(tick);
+      else setVal(end);
+    }
+    requestAnimationFrame(tick);
+  }, [end, delay]);
+
+  return (
+    <div style={{
+      padding: "0 40px",
+      borderLeft: "1px solid #1e1e30",
+    }}>
+      <div style={{
+        fontSize: "clamp(2.4em, 5vw, 3.5em)",
+        fontWeight: 900,
+        color: "#fff",
+        letterSpacing: "-0.05em",
+        lineHeight: 1,
+        fontVariantNumeric: "tabular-nums",
+      }}>
+        {val}{suffix}
+      </div>
+      <div style={{ fontSize: "0.78em", color: "#888", marginTop: 6 }}>{lbl}</div>
+    </div>
+  );
+}
+
 // ====== MAIN APP ======
 export default function App() {
   const [page, setPage] = useState("home");
@@ -832,81 +874,130 @@ export default function App() {
           >
             <FloatingOrbs />
 
-            <div style={{ padding: "40px 0" }}>
+            <div style={{ position: "relative", zIndex: 1 }}>
+              {/* Act 1 — subtitle */}
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
+                initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
+                transition={{ delay: 0.3, duration: 0.7 }}
                 style={{
-                  fontSize: "0.75em",
-                  fontWeight: 700,
+                  fontSize: "clamp(0.72em, 1.5vw, 0.85em)",
+                  fontWeight: 400,
+                  letterSpacing: "0.18em",
+                  color: "#666",
+                  marginBottom: 24,
                   textTransform: "uppercase",
-                  letterSpacing: "0.12em",
-                  background: "linear-gradient(90deg, #a78bfa, #f472b6, #fbbf24)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  marginBottom: 16,
                 }}
               >
-                AI FULL-STACK ENGINEER
+                一个人 · 两个月 · 七个项目
               </motion.div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 28 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15, duration: 0.7 }}
-                style={{ fontSize: "3.4em", fontWeight: 800, letterSpacing: "-0.05em", lineHeight: 1.1, marginBottom: 18 }}
+              {/* Act 2 — role */}
+              <motion.div
+                initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+                style={{
+                  fontSize: "clamp(1em, 2.5vw, 1.3em)",
+                  fontWeight: 300,
+                  color: "#ccc",
+                  letterSpacing: "0.04em",
+                  marginBottom: 32,
+                }}
               >
-                <div style={{ color: "#fff" }}>一个人做完</div>
-                <div>
-                  <span
-                    style={{
-                      background: "linear-gradient(135deg, #f472b6, #a78bfa, #60a5fa)",
-                      backgroundSize: "200% auto",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      animation: "gradientShift 4s ease infinite",
-                    }}
-                  >
-                    需求到交付
-                  </span>
-                </div>
-              </motion.h1>
+                AI 全栈工程师
+              </motion.div>
 
-              <motion.p initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} style={{ fontSize: "1.08em", color: "#888", maxWidth: 580, marginBottom: 6 }}>
+              {/* Act 3 — mega headline */}
+              <motion.div
+                initial={{ opacity: 0, y: 40, filter: "blur(12px)", scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0)", scale: 1 }}
+                transition={{ delay: 1.0, duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+                style={{ marginBottom: 32 }}
+              >
+                <h1
+                  style={{
+                    fontSize: "clamp(3.2em, 8vw, 7em)",
+                    fontWeight: 900,
+                    letterSpacing: "-0.06em",
+                    lineHeight: 0.95,
+                    margin: 0,
+                    background: "linear-gradient(135deg, #f472b6 0%, #a78bfa 35%, #60a5fa 70%)",
+                    backgroundSize: "300% auto",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    animation: "gradientShift 4s ease infinite",
+                  }}
+                >
+                  从需求
+                  <br />
+                  到交付
+                </h1>
+              </motion.div>
+
+              {/* Act 4 — tagline */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5, duration: 0.7 }}
+                style={{
+                  fontSize: "clamp(0.9em, 1.5vw, 1.05em)",
+                  color: "#888",
+                  maxWidth: 520,
+                  lineHeight: 1.7,
+                  marginBottom: 48,
+                }}
+              >
                 不等资源 · 不依赖团队 · 做完即用。7 个 AI 项目独立闭环，自建 RTX 5090 GPU 基础设施。
               </motion.p>
-              <motion.p initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ fontSize: "0.86em", color: "#888" }}>
-                5 年以上开发经验 · 远程 / 深圳
-              </motion.p>
 
+              {/* Act 5 — stats with count-up */}
               <motion.div
-                initial={{ opacity: 0, y: 28 }}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                style={{ display: "flex", gap: 56, marginTop: 50, flexWrap: "wrap" }}
+                transition={{ delay: 2.0, duration: 0.7 }}
+                style={{
+                  display: "flex",
+                  gap: "clamp(32px, 6vw, 72px)",
+                  flexWrap: "wrap",
+                  marginBottom: 64,
+                }}
               >
                 {[
-                  { num: 7, lbl: "独立交付项目" },
-                  { num: 2, lbl: "月全部从零到上线" },
-                  { num: 0, lbl: "烂尾项目" },
-                ].map((s, i) => (
-                  <motion.div key={i} whileHover={{ y: -4 }} style={{ paddingLeft: i > 0 ? 56 : 0, borderLeft: i > 0 ? "1px solid #1e1e30" : "none" }}>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.5 + i * 0.15, duration: 0.5 }}
-                      style={{ fontSize: "2.8em", fontWeight: 800, color: "#fff", letterSpacing: "-0.04em" }}
-                    >
-                      {s.num}
-                    </motion.div>
-                    <div style={{ fontSize: "0.8em", color: "#888", marginTop: 4 }}>{s.lbl}</div>
-                  </motion.div>
+                  { end: 7, suffix: "", lbl: "独立交付项目" },
+                  { end: 2, suffix: " 月", lbl: "从零到上线" },
+                  { end: 0, suffix: "", lbl: "烂尾项目" },
+                ].map((stat, i) => (
+                  <AnimatedNumber key={i} delay={2.2 + i * 0.2} {...stat} />
                 ))}
               </motion.div>
 
+              {/* Act 6 — scroll hint */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 3.0, duration: 0.8 }}
+                style={{
+                  textAlign: "center",
+                  paddingBottom: 40,
+                }}
+              >
+                <motion.div
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  style={{
+                    fontSize: "0.7em",
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "#555",
+                  }}
+                >
+                  ↓ 向下探索
+                </motion.div>
+              </motion.div>
+
               {/* Tech stack marquee */}
-              <div style={{ marginTop: 56, overflow: "hidden", maskImage: "linear-gradient(90deg, transparent, black 10%, black 90%, transparent)" }}>
+              <div style={{ overflow: "hidden", maskImage: "linear-gradient(90deg, transparent, black 10%, black 90%, transparent)", marginBottom: 64 }}>
                 <motion.div
                   animate={{ x: ["0%", "-50%"] }}
                   transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
