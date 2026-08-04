@@ -340,7 +340,7 @@ function VideoBackground() {
           opacity: 0.35,
           filter: "saturate(0.6) brightness(0.7)",
         }}
-        src="/bg.mp4"
+        src="./bg.mp4"
       />
       <div
         style={{
