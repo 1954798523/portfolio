@@ -603,6 +603,9 @@ function ProjectCard({ project, index, onClick }) {
 
 // ====== DETAIL PAGE ======
 function DetailPage({ project, onBack }) {
+  const accentColors = ["#a78bfa", "#f472b6", "#34d399", "#60a5fa"];
+  const statusWidths = ["100%", "97%", "92%", "88%", "84%"];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
@@ -614,107 +617,177 @@ function DetailPage({ project, onBack }) {
       <button
         onClick={onBack}
         style={{
-          color: "#a78bfa",
-          background: "none",
-          border: "none",
-          fontSize: "0.86em",
-          fontWeight: 500,
-          cursor: "pointer",
-          marginBottom: 28,
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 6,
-          padding: 0,
+          color: "#a78bfa", background: "none", border: "none",
+          fontSize: "0.86em", fontWeight: 500, cursor: "pointer",
+          marginBottom: 28, display: "inline-flex", alignItems: "center",
+          gap: 6, padding: 0,
         }}
       >
         ← 返回
       </button>
 
-      <div style={{ marginBottom: 28 }}>
-        <span
-          style={{
-            fontSize: "0.68em",
-            fontWeight: 600,
-            color: "#a78bfa",
-            background: "rgba(167,139,250,0.12)",
-            padding: "4px 12px",
-            borderRadius: 20,
-            marginBottom: 12,
-            display: "inline-block",
-          }}
-        >
-          {project.badge}
-        </span>
-        <h1 style={{ fontSize: "2.3em", fontWeight: 700, color: "#fff", letterSpacing: "-0.04em", marginBottom: 8, marginTop: 12 }}>{project.name}</h1>
-        <p style={{ color: "#888", fontSize: "0.96em", maxWidth: 640 }}>{project.desc}</p>
+      <div style={{ marginBottom: 32 }}>
+        <span style={{
+          fontSize: "0.68em", fontWeight: 600, color: "#a78bfa",
+          background: "rgba(167,139,250,0.12)", padding: "4px 12px",
+          borderRadius: 20, marginBottom: 16, display: "inline-block",
+        }}>{project.badge}</span>
+        <h1 style={{ fontSize: "2.6em", fontWeight: 900, color: "#fff", letterSpacing: "-0.05em", margin: "14px 0 10px" }}>{project.name}</h1>
+        <p style={{ color: "#888", fontSize: "1em", maxWidth: 600, lineHeight: 1.7 }}>{project.desc}</p>
       </div>
 
-      <div
-        style={{
-          width: "100%",
-          minHeight: 200,
-          borderRadius: 14,
-          border: "1px solid #1e1e30",
-          background: "linear-gradient(135deg,#111125,#1a1a35)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 32,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <span style={{ position: "relative", zIndex: 1, color: "#888", fontSize: "0.88em", textAlign: "center", padding: 20 }}>
-          📸 需要图片：{project.img}
-        </span>
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.03), transparent)",
-            animation: "shimmer 3s infinite",
-          }}
-        />
-      </div>
-
-      <div style={{ display: "flex", gap: 40, flexWrap: "wrap", margin: "28px 0 36px" }}>
+      {/* B — Metrics visualization */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginBottom: 40 }}>
         {project.metrics.map((m, i) => (
-          <div key={i}>
-            <div style={{ fontSize: "1.8em", fontWeight: 700, color: "#fff" }}>{m.big}</div>
-            <div style={{ fontSize: "0.76em", color: "#888" }}>{m.lbl}</div>
-          </div>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.08 }}
+            viewport={{ once: true }}
+            style={{
+              background: "#0d0d14", border: "1px solid #1e1e30", borderRadius: 14,
+              padding: "24px 22px", position: "relative", overflow: "hidden",
+            }}
+          >
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: 2,
+              background: `linear-gradient(90deg, ${accentColors[i % 4]}, transparent)`,
+            }} />
+            <div style={{
+              fontSize: "clamp(2.2em, 5vw, 2.8em)", fontWeight: 900,
+              background: `linear-gradient(135deg, ${accentColors[i % 4]}, ${accentColors[(i + 1) % 4]})`,
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              letterSpacing: "-0.04em", lineHeight: 1.1, marginBottom: 4,
+            }}>
+              {m.big}
+            </div>
+            <div style={{ fontSize: "0.8em", color: "#777", fontWeight: 500 }}>{m.lbl}</div>
+            <div style={{
+              marginTop: 12, height: 3, background: "#1a1a2a", borderRadius: 2, overflow: "hidden",
+            }}>
+              <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: statusWidths[i % 5] }}
+                transition={{ duration: 1.2, delay: 0.2 + i * 0.1 }}
+                viewport={{ once: true }}
+                style={{
+                  height: "100%", borderRadius: 2,
+                  background: `linear-gradient(90deg, ${accentColors[i % 4]}, ${accentColors[(i + 1) % 4]})`,
+                }}
+              />
+            </div>
+          </motion.div>
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22 }}>
-        <div>
-          <h3 style={{ fontSize: "0.76em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#a78bfa", marginBottom: 10 }}>痛点</h3>
-          <p style={{ color: "#888", fontSize: "0.88em", lineHeight: 1.75 }}>{project.pain}</p>
+      {/* C — Pain vs Solution comparison */}
+      <div style={{ marginBottom: 36 }}>
+        <div style={{
+          fontSize: "0.74em", fontWeight: 700, textTransform: "uppercase",
+          letterSpacing: "0.1em", color: "#666", marginBottom: 16,
+        }}>
+          问题 → 方案
         </div>
-        <div>
-          <h3 style={{ fontSize: "0.76em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#f472b6", marginBottom: 10 }}>方案</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            {project.solution.map((s, i) => (
-              <li key={i} style={{ color: "#888", fontSize: "0.88em", lineHeight: 1.75 }}>
-                — {s}
-              </li>
-            ))}
-          </ul>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            viewport={{ once: true }}
+            style={{
+              background: "rgba(244,114,182,0.04)", border: "1px solid rgba(244,114,182,0.15)",
+              borderRadius: 16, padding: 28, position: "relative", overflow: "hidden",
+            }}
+          >
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: 3,
+              background: "linear-gradient(90deg, #f472b6, rgba(244,114,182,0.2))",
+            }} />
+            <div style={{ fontSize: "0.72em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#f472b6", marginBottom: 14 }}>
+              ⚠ 痛点
+            </div>
+            <p style={{ color: "#999", fontSize: "0.88em", lineHeight: 1.8 }}>{project.pain}</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            viewport={{ once: true }}
+            style={{
+              background: "rgba(52,211,153,0.04)", border: "1px solid rgba(52,211,153,0.15)",
+              borderRadius: 16, padding: 28, position: "relative", overflow: "hidden",
+            }}
+          >
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: 3,
+              background: "linear-gradient(90deg, #34d399, rgba(52,211,153,0.2))",
+            }} />
+            <div style={{ fontSize: "0.72em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#34d399", marginBottom: 14 }}>
+              ✓ 方案
+            </div>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {project.solution.map((s, i) => (
+                <li key={i} style={{
+                  color: "#aaa", fontSize: "0.84em", lineHeight: 1.8,
+                  paddingLeft: 20, position: "relative",
+                }}>
+                  <span style={{
+                    position: "absolute", left: 0, top: "0.55em",
+                    width: 6, height: 6, borderRadius: "50%",
+                    background: "#34d399", opacity: 0.6,
+                  }} />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
         </div>
       </div>
 
+      {/* D — Key decision quote block */}
       {project.decision && (
-        <div style={{ marginTop: 20 }}>
-          <h3 style={{ fontSize: "0.76em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#60a5fa", marginBottom: 10 }}>关键决策</h3>
-          <p style={{ color: "#888", fontSize: "0.88em", lineHeight: 1.75 }}>{project.decision}</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          style={{
+            marginBottom: 36, padding: "24px 28px",
+            background: "rgba(96,165,250,0.04)", borderRadius: 14,
+            borderLeft: "3px solid #60a5fa",
+          }}
+        >
+          <div style={{
+            fontSize: "0.7em", fontWeight: 700, textTransform: "uppercase",
+            letterSpacing: "0.1em", color: "#60a5fa", marginBottom: 10,
+          }}>
+            关键决策
+          </div>
+          <p style={{
+            color: "#ccc", fontSize: "0.92em", lineHeight: 1.8,
+            fontStyle: "italic", margin: 0,
+          }}>
+            "{project.decision}"
+          </p>
+        </motion.div>
       )}
 
-      <div style={{ marginTop: 24 }}>
-        <h3 style={{ fontSize: "0.76em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#34d399", marginBottom: 10 }}>技术栈</h3>
-        <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-          {project.tags.map((t) => (
-            <span key={t} style={{ fontSize: "0.66em", background: "#1a1a2a", color: "#888", padding: "3px 10px", borderRadius: 5, fontWeight: 500 }}>
+      <div>
+        <div style={{
+          fontSize: "0.7em", fontWeight: 700, textTransform: "uppercase",
+          letterSpacing: "0.1em", color: "#666", marginBottom: 12,
+        }}>
+          技术栈
+        </div>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {project.tags.map((t, i) => (
+            <span key={t} style={{
+              fontSize: "0.7em", fontWeight: 500, letterSpacing: "0.02em",
+              color: accentColors[i % 4],
+              background: `${accentColors[i % 4]}12`,
+              padding: "5px 14px", borderRadius: 20,
+              border: `1px solid ${accentColors[i % 4]}20`,
+            }}>
               {t}
             </span>
           ))}
