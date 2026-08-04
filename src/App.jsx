@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import GlassIcons from "./components/GlassIcons";
+import BorderGlow from "./components/BorderGlow/BorderGlow";
 
 // ====== DATA ======
 const PROJECTS = [
@@ -385,73 +386,80 @@ function ProjectCard({ project, index, onClick }) {
       onMouseLeave={handleMouseLeave}
       whileHover={{ y: -4 }}
       style={{
-        display: "grid",
-        gridTemplateColumns: "280px 1fr",
-        background: "#111118",
-        border: "1px solid #1e1e30",
-        borderRadius: 16,
-        overflow: "hidden",
-        cursor: "pointer",
         transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
         transition: "transform 0.1s ease-out, box-shadow 0.3s",
-        boxShadow: (tilt.x || tilt.y) ? "0 20px 60px rgba(0,0,0,0.5)" : "none",
-        position: "relative",
       }}
     >
-      {/* Image placeholder */}
-      <div
-        style={{
-          background: `linear-gradient(135deg, #151525, #1c1c32)`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 200,
-          position: "relative",
-          overflow: "hidden",
-        }}
+      <BorderGlow
+        borderRadius={16}
+        glowRadius={36}
+        backgroundColor="#111118"
+        colors={[borderColors[index % borderColors.length].split(",")[0], "#c084fc", "#38bdf8"]}
       >
-        <div style={{ fontSize: "0.8em", color: "#888", textAlign: "center", padding: 20, position: "relative", zIndex: 1 }}>
-          <span style={{ fontSize: "2.4em", display: "block", marginBottom: 10 }}>{project.badge === "AI 基础设施" ? "🎨" : project.badge === "LLM Agent" ? "🤖" : project.badge === "桌面工具" ? "📋" : project.badge === "内部工具" ? "🌐" : project.badge === "算法+插件" ? "💎" : project.badge === "批处理管线" ? "📄" : "🖼️"}</span>
-          {project.img}
-          <br />
-          <span style={{ fontSize: "0.8em", opacity: 0.5 }}>[截图待替换]</span>
-        </div>
         <div
           style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.03), transparent)",
-            animation: "shimmer 3s infinite",
+            display: "grid",
+            gridTemplateColumns: "280px 1fr",
+            cursor: "pointer",
           }}
-        />
-      </div>
-      {/* Info */}
-      <div style={{ padding: "28px 30px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6, gap: 8, flexWrap: "wrap" }}>
-          <span style={{ fontSize: "1.18em", fontWeight: 700, color: "#fff", letterSpacing: "-0.02em" }}>{project.name}</span>
-          <span
+        >
+          {/* Image placeholder */}
+          <div
             style={{
-              fontSize: "0.68em",
-              fontWeight: 600,
-              color: "#a78bfa",
-              background: "rgba(167,139,250,0.12)",
-              padding: "4px 12px",
-              borderRadius: 20,
-              whiteSpace: "nowrap",
+              background: `linear-gradient(135deg, #151525, #1c1c32)`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: 200,
+              position: "relative",
+              overflow: "hidden",
+              borderRadius: "16px 0 0 16px",
             }}
           >
-            {project.badge}
-          </span>
+            <div style={{ fontSize: "0.8em", color: "#888", textAlign: "center", padding: 20, position: "relative", zIndex: 1 }}>
+              <span style={{ fontSize: "2.4em", display: "block", marginBottom: 10 }}>{project.badge === "AI 基础设施" ? "🎨" : project.badge === "LLM Agent" ? "🤖" : project.badge === "桌面工具" ? "📋" : project.badge === "内部工具" ? "🌐" : project.badge === "算法+插件" ? "💎" : project.badge === "批处理管线" ? "📄" : "🖼️"}</span>
+              {project.img}
+              <br />
+              <span style={{ fontSize: "0.8em", opacity: 0.5 }}>[截图待替换]</span>
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.03), transparent)",
+                animation: "shimmer 3s infinite",
+              }}
+            />
+          </div>
+          {/* Info */}
+          <div style={{ padding: "28px 30px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6, gap: 8, flexWrap: "wrap" }}>
+              <span style={{ fontSize: "1.18em", fontWeight: 700, color: "#fff", letterSpacing: "-0.02em" }}>{project.name}</span>
+              <span
+                style={{
+                  fontSize: "0.68em",
+                  fontWeight: 600,
+                  color: "#a78bfa",
+                  background: "rgba(167,139,250,0.12)",
+                  padding: "4px 12px",
+                  borderRadius: 20,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {project.badge}
+              </span>
+            </div>
+            <p style={{ color: "#888", fontSize: "0.86em", marginBottom: 12, lineHeight: 1.6 }}>{project.desc}</p>
+            <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+              {project.tags.map((t) => (
+                <span key={t} style={{ fontSize: "0.66em", background: "#1a1a2a", color: "#888", padding: "3px 10px", borderRadius: 5, fontWeight: 500 }}>
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-        <p style={{ color: "#888", fontSize: "0.86em", marginBottom: 12, lineHeight: 1.6 }}>{project.desc}</p>
-        <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-          {project.tags.map((t) => (
-            <span key={t} style={{ fontSize: "0.66em", background: "#1a1a2a", color: "#888", padding: "3px 10px", borderRadius: 5, fontWeight: 500 }}>
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
+      </BorderGlow>
     </motion.div>
   );
 }
@@ -671,16 +679,20 @@ function ContactPage() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
         style={{
-          background: "#111118",
-          border: "1px solid #1e1e30",
-          borderRadius: 18,
-          padding: 48,
           display: "inline-block",
           maxWidth: 480,
           width: "100%",
         }}
       >
-        <h2 style={{ fontSize: "1.4em", color: "#fff", marginBottom: 8 }}>开放机会</h2>
+        <BorderGlow
+          borderRadius={18}
+          glowRadius={40}
+          backgroundColor="#111118"
+          animated
+          colors={["#c084fc", "#f472b6", "#38bdf8"]}
+        >
+          <div style={{ padding: 48 }}>
+            <h2 style={{ fontSize: "1.4em", color: "#fff", marginBottom: 8 }}>开放机会</h2>
         <p style={{ color: "#888", marginBottom: 4, fontSize: "0.9em" }}>所有项目均可提供演示</p>
         <p style={{ fontSize: "0.84em", marginTop: 12, color: "#888" }}>不需要笔试，让我直接做给你看</p>
         <p style={{ fontSize: "0.8em", marginTop: 8, color: "#888" }}>远程 / 深圳 · 两周到岗</p>
@@ -704,6 +716,8 @@ function ContactPage() {
           <span style={{ position: "relative", zIndex: 1 }}>获取完整简历</span>
         </motion.button>
         <p style={{ fontSize: "0.72em", color: "#888", marginTop: 18 }}>全部项目单人独立完成 · 需求到交付零依赖</p>
+          </div>
+        </BorderGlow>
       </motion.div>
     </motion.div>
   );
