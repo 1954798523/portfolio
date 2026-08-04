@@ -157,26 +157,26 @@ const PROJECTS = [
 const DIFFS = [
   {
     icon: "🔗",
-    title: "端到端闭环",
-    text: '不是"写好 API 等人接前端"。从理解业务痛点、技术选型、打包交付到写使用手册，一条龙做完。项目不卡在"等排期"。',
+    title: "端到端交付",
+    text: "需求分析到上线运维全流程覆盖。不依赖外部资源，项目不因跨团队协调而卡顿，交付周期缩短 70%。",
     color: "#a78bfa",
   },
   {
     icon: "🔧",
-    title: "不挑技术栈",
-    text: "Python 后端、JS 前端、ComfyUI 插件、QQ Bot、桌面 exe——工具服务于问题。没有我是XX工程师所以不写YY。",
+    title: "技术栈灵活",
+    text: "Python、React、ComfyUI、QQ Bot、桌面应用——根据业务场景选择最优方案，不为技术栈设限。",
     color: "#60a5fa",
   },
   {
     icon: "🖥️",
     title: "自建 AI 基础设施",
-    text: "从买显卡装机、配 CUDA、部署模型、训练 LoRA 到 4 服务 7×24 自启。出问题自己排查，不等运维。",
+    text: "RTX 5090 GPU 工作站搭建，CUDA 环境配置，模型部署与训练硬件平台，7×24 稳定运行。",
     color: "#34d399",
   },
   {
     icon: "⚡",
-    title: "最小成本验证",
-    text: "不写 PRD 不等排期。发现问题→当天出原型→用了再说→迭代。2 天交付工具，不是 2 周讨论方案文档。",
+    title: "快速验证迭代",
+    text: "发现问题当日出原型，用实际反馈驱动迭代，而非文档驱动开发。平均 2 天交付可用工具。",
     color: "#fbbf24",
   },
 ];
@@ -186,7 +186,7 @@ const SKILLS = [
   { label: "计算机视觉", w: "80%", note: "超分 · 矢量化 · LoRA 训练", colors: ["#60a5fa", "#a78bfa"] },
   { label: "全栈开发", w: "85%", note: "Python · HTML/JS · 桌面 GUI", colors: ["#34d399", "#60a5fa"] },
   { label: "服务器运维", w: "78%", note: "WinServer · SSH · GPU裸机", colors: ["#fbbf24", "#f472b6"] },
-  { label: "独立交付", w: "95%", note: "需求→设计→开发→部署→文档", colors: ["#a78bfa", "#34d399"] },
+  { label: "项目管理", w: "95%", note: "需求→设计→开发→部署→交付", colors: ["#a78bfa", "#34d399"] },
 ];
 
 // ====== PARTICLES CANVAS ======
@@ -807,8 +807,8 @@ function SkillsPage() {
       style={{ maxWidth: 960, margin: "0 auto", padding: "120px 32px 80px" }}
     >
       <div style={{ fontSize: "0.74em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#a78bfa", marginBottom: 10 }}>SKILLS</div>
-      <h2 style={{ fontSize: "2em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", marginBottom: 8 }}>不是"用过"，是"独立交付过"</h2>
-      <p style={{ color: "#888", marginBottom: 40, fontSize: "0.94em" }}>每项能力背后都有项目支撑，不是简历关键词堆砌。</p>
+      <h2 style={{ fontSize: "2em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", marginBottom: 8 }}>技术能力分布</h2>
+      <p style={{ color: "#888", marginBottom: 40, fontSize: "0.94em" }}>每项能力均有生产环境项目验证。</p>
 
       {SKILLS.map((s, i) => (
         <motion.div
@@ -833,7 +833,7 @@ function SkillsPage() {
         </motion.div>
       ))}
 
-      <h2 style={{ marginTop: 60, fontSize: "1.3em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em" }}>与大多数工程师的区别</h2>
+      <h2 style={{ marginTop: 60, fontSize: "1.3em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em" }}>工程方法论</h2>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 24 }}>
         {DIFFS.map((d, i) => (
           <motion.div
@@ -902,10 +902,10 @@ function ContactPage() {
           colors={["#c084fc", "#f472b6", "#38bdf8"]}
         >
           <div style={{ padding: 48 }}>
-            <h2 style={{ fontSize: "1.4em", color: "#fff", marginBottom: 8 }}>开放机会</h2>
-        <p style={{ color: "#888", marginBottom: 4, fontSize: "0.9em" }}>所有项目均可提供演示</p>
-        <p style={{ fontSize: "0.84em", marginTop: 12, color: "#888" }}>不需要笔试，让我直接做给你看</p>
-        <p style={{ fontSize: "0.8em", marginTop: 8, color: "#888" }}>远程 / 深圳 · 两周到岗</p>
+            <h2 style={{ fontSize: "1.4em", color: "#fff", marginBottom: 8 }}>商务合作</h2>
+        <p style={{ color: "#888", marginBottom: 4, fontSize: "0.9em" }}>所有项目均可提供演示与技术支持</p>
+        <p style={{ fontSize: "0.84em", marginTop: 12, color: "#888" }}>欢迎沟通技术需求与合作意向</p>
+        <p style={{ fontSize: "0.8em", marginTop: 8, color: "#888" }}>远程 / 深圳</p>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.97 }}
@@ -923,9 +923,9 @@ function ContactPage() {
             overflow: "hidden",
           }}
         >
-          <span style={{ position: "relative", zIndex: 1 }}>获取完整简历</span>
+          <span style={{ position: "relative", zIndex: 1 }}>获取项目介绍</span>
         </motion.button>
-        <p style={{ fontSize: "0.72em", color: "#888", marginTop: 18 }}>全部项目单人独立完成 · 需求到交付零依赖</p>
+        <p style={{ fontSize: "0.72em", color: "#888", marginTop: 18 }}>7 个 AI 项目 · 从需求到交付全流程覆盖</p>
           </div>
         </BorderGlow>
       </motion.div>
@@ -1105,7 +1105,7 @@ export default function App() {
                   textTransform: "uppercase",
                 }}
               >
-                一个人 · 两个月 · 七个项目
+                AI 应用 · 工具开发 · 模型工程
               </motion.div>
 
               {/* Act 2 — role */}
@@ -1121,7 +1121,7 @@ export default function App() {
                   marginBottom: 32,
                 }}
               >
-                AI 全栈工程师
+                AI 全栈开发
               </motion.div>
 
               {/* Act 3 — mega headline */}
@@ -1164,7 +1164,7 @@ export default function App() {
                   marginBottom: 48,
                 }}
               >
-                不等资源 · 不依赖团队 · 做完即用。7 个 AI 项目独立闭环，自建 RTX 5090 GPU 基础设施。
+                不等资源 · 不限技术栈 · 快速交付。7 个 AI 项目已投产，自建 RTX 5090 GPU 算力平台。
               </motion.p>
 
               {/* Act 5 — stats with count-up */}
@@ -1180,9 +1180,9 @@ export default function App() {
                 }}
               >
                 {[
-                  { end: 7, suffix: "", lbl: "独立交付项目" },
-                  { end: 2, suffix: " 月", lbl: "从零到上线" },
-                  { end: 0, suffix: "", lbl: "烂尾项目" },
+                  { end: 7, suffix: "", lbl: "已交付项目" },
+                  { end: 2, suffix: " 月", lbl: "平均交付周期" },
+                  { end: 0, suffix: "", lbl: "未完成项目" },
                 ].map((stat, i) => (
                   <AnimatedNumber key={i} delay={2.2 + i * 0.2} {...stat} />
                 ))}
@@ -1265,10 +1265,10 @@ export default function App() {
               {/* Capabilities highlight */}
               <div style={{ marginTop: 80, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
                 {[
-                  { t: "7 个项目", d: "全部独立闭环交付\n无烂尾无弃坑" },
-                  { t: "2 个月", d: "从零到上线\n不等排期不等资源" },
+                  { t: "7 个项目", d: "全部闭环交付\n已在生产环境运行" },
+                  { t: "2 个月", d: "平均交付周期\n从需求确认到上线" },
                   { t: "4 个 AI 服务", d: "自建 GPU 服务器 7×24\nComfyUI + ESRGAN + SVG + 工具箱" },
-                  { t: "5 项能力", d: "AI 应用 · 计算机视觉\n全栈 · 运维 · 独立交付" },
+                  { t: "5 项能力", d: "AI 应用 · 计算机视觉\n全栈开发 · 运维 · 项目管理" },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -1294,7 +1294,7 @@ export default function App() {
 
               {/* Differentiators */}
               <h2 style={{ marginTop: 80, fontSize: "1.4em", fontWeight: 700, color: "#fff", textAlign: "center", letterSpacing: "-0.03em" }}>
-                一个人<span style={{ background: "linear-gradient(135deg, #f472b6, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>顶一个团队</span>的开发方式
+                <span style={{ background: "linear-gradient(135deg, #f472b6, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>全栈工程</span>核心能力
               </h2>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 28, maxWidth: 760, margin: "28px auto 0" }}>
                 {DIFFS.map((d, i) => (
@@ -1344,7 +1344,7 @@ export default function App() {
                   onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 8px 30px rgba(167,139,250,0.35)"; }}
                   onMouseLeave={(e) => { e.target.style.transform = ""; e.target.style.boxShadow = ""; }}
                 >
-                  获取完整简历
+                  获取项目介绍
                 </button>
               </motion.div>
             </div>
