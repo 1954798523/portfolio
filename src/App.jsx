@@ -322,32 +322,138 @@ function ScrollProgress() {
   );
 }
 
-// ====== FLOATING ORBS ======
-function FloatingOrbs() {
+// ====== AURORA BACKGROUND ======
+function AuroraBackground() {
   return (
-    <div style={{ position: "absolute", pointerEvents: "none", zIndex: 0, top: 0, left: 0, right: 0, bottom: 0 }}>
+    <div style={{ position: "absolute", pointerEvents: "none", zIndex: 0, inset: 0, overflow: "hidden" }}>
       {[
-        { size: 80, color: "rgba(167,139,250,0.1)", top: "10%", left: "85%", delay: 0 },
-        { size: 120, color: "rgba(244,114,182,0.08)", top: "60%", left: "5%", delay: -3 },
-        { size: 60, color: "rgba(96,165,250,0.1)", top: "40%", left: "75%", delay: -5 },
-      ].map((o, i) => (
+        { size: "60vw", color: "hsla(268,100%,76%,0.12)", x: "60%", y: "30%", dur: 28, dx: -80, dy: 60 },
+        { size: "45vw", color: "hsla(349,100%,74%,0.10)", x: "20%", y: "50%", dur: 32, dx: 100, dy: -50 },
+        { size: "50vw", color: "hsla(192,100%,64%,0.08)", x: "70%", y: "70%", dur: 36, dx: -60, dy: -70 },
+        { size: "35vw", color: "hsla(283,100%,70%,0.07)", x: "40%", y: "20%", dur: 24, dx: 70, dy: 40 },
+      ].map((b, i) => (
         <motion.div
           key={i}
           style={{
             position: "absolute",
-            width: o.size,
-            height: o.size,
+            width: b.size,
+            height: b.size,
             borderRadius: "50%",
-            background: `radial-gradient(circle, ${o.color}, transparent)`,
-            top: o.top,
-            left: o.left,
+            background: `radial-gradient(circle, ${b.color}, transparent 70%)`,
+            filter: "blur(80px)",
+            left: b.x,
+            top: b.y,
+            transform: "translate(-50%, -50%)",
           }}
-          animate={{ y: [0, -30, 0], scale: [1, 1.1, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: o.delay }}
+          animate={{ x: [0, b.dx, 0], y: [0, b.dy, 0] }}
+          transition={{ duration: b.dur, repeat: Infinity, ease: "easeInOut", delay: i * -7 }}
         />
       ))}
     </div>
   );
+}
+
+// ====== ROTATING RING ======
+function RotatingRing() {
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        pointerEvents: "none",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%,-50%)",
+        width: "min(70vw, 500px)",
+        height: "min(70vw, 500px)",
+        zIndex: 0,
+        opacity: 0.25,
+      }}
+    >
+      <motion.svg
+        viewBox="0 0 200 200"
+        style={{ width: "100%", height: "100%" }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+      >
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#a78bfa" stopOpacity="0" />
+            <stop offset="30%" stopColor="#f472b6" stopOpacity="1" />
+            <stop offset="60%" stopColor="#a78bfa" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#a78bfa" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="94" fill="none" stroke="url(#ringGrad)" strokeWidth="2.5" />
+      </motion.svg>
+      <motion.svg
+        viewBox="0 0 200 200"
+        style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}
+        animate={{ rotate: -360 }}
+        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+      >
+        <defs>
+          <linearGradient id="ringGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#60a5fa" stopOpacity="0" />
+            <stop offset="40%" stopColor="#60a5fa" stopOpacity="0.8" />
+            <stop offset="70%" stopColor="#a78bfa" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="84" fill="none" stroke="url(#ringGrad2)" strokeWidth="1.5" />
+      </motion.svg>
+    </motion.div>
+  );
+}
+
+// ====== FLOATING EMBERS ======
+function FloatingEmbers() {
+  const embers = useRef([]);
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const c = canvasRef.current;
+    const ctx = c.getContext("2d");
+    const rect = c.parentElement.getBoundingClientRect();
+    c.width = rect.width;
+    c.height = rect.height;
+
+    const count = 30;
+    for (let i = 0; i < count; i++) {
+      embers.current.push({
+        x: Math.random() * c.width,
+        y: Math.random() * c.height,
+        r: Math.random() * 1.5 + 0.5,
+        vy: -(Math.random() * 0.3 + 0.1),
+        vx: (Math.random() - 0.5) * 0.2,
+        alpha: Math.random() * 0.5 + 0.2,
+        hue: [268, 349, 192][Math.floor(Math.random() * 3)],
+      });
+    }
+
+    let anim;
+    function draw() {
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (const e of embers.current) {
+        e.y += e.vy;
+        e.x += e.vx;
+        if (e.y < -10) { e.y = c.height + 10; e.x = Math.random() * c.width; }
+        if (e.x < -10) e.x = c.width + 10;
+        if (e.x > c.width + 10) e.x = -10;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${e.hue}, 100%, 76%, ${e.alpha})`;
+        ctx.shadowColor = `hsla(${e.hue}, 100%, 76%, ${e.alpha})`;
+        ctx.shadowBlur = 6;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      anim = requestAnimationFrame(draw);
+    }
+    draw();
+    return () => cancelAnimationFrame(anim);
+  }, []);
+
+  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1 }} />;
 }
 
 // ====== PROJECT CARD ======
@@ -872,9 +978,14 @@ export default function App() {
             transition={{ duration: 0.4 }}
             style={{ maxWidth: 1000, margin: "0 auto", padding: "140px 32px 80px", position: "relative" }}
           >
-            <FloatingOrbs />
+            <AuroraBackground />
 
-            <div style={{ position: "relative", zIndex: 1 }}>
+            <div style={{ position: "relative", zIndex: 2, pointerEvents: "none" }}>
+              <RotatingRing />
+              <FloatingEmbers />
+            </div>
+
+            <div style={{ position: "relative", zIndex: 3 }}>
               {/* Act 1 — subtitle */}
               <motion.div
                 initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
