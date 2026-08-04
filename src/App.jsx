@@ -322,6 +322,37 @@ function ScrollProgress() {
   );
 }
 
+// ====== VIDEO BACKGROUND ======
+function VideoBackground() {
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: -1, overflow: "hidden" }}>
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          opacity: 0.35,
+          filter: "saturate(0.6) brightness(0.7)",
+        }}
+        src="/bg.mp4"
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "radial-gradient(ellipse at 50% 40%, rgba(6,6,12,0.4) 0%, rgba(6,6,12,0.85) 70%)",
+        }}
+      />
+    </div>
+  );
+}
+
 // ====== AURORA BACKGROUND ======
 function AuroraBackground() {
   return (
@@ -895,6 +926,7 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#06060c", color: "#e4e4ee", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif", lineHeight: 1.7, overflowX: "hidden" }}>
+      <VideoBackground />
       <Particles />
       <CursorGlow />
       <ScrollProgress />
