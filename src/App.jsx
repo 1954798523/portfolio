@@ -337,8 +337,7 @@ function VideoBackground() {
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          opacity: 0.7,
-          filter: "saturate(1.1) brightness(1.0)",
+          opacity: 0.85,
         }}
         src="./bg.mp4"
       />
@@ -346,7 +345,7 @@ function VideoBackground() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(6,6,12,0.75) 75%)",
+          background: "linear-gradient(180deg, rgba(6,6,12,0.5) 0%, rgba(6,6,12,0.3) 50%, rgba(6,6,12,0.6) 100%)",
         }}
       />
     </div>
@@ -1081,7 +1080,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
             exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
             transition={{ duration: 0.4 }}
-            style={{ maxWidth: 1000, margin: "0 auto", padding: "140px 32px 80px", position: "relative" }}
+            style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(160px, 22vh, 240px) 32px 80px", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }}
           >
             <AuroraBackground />
 
@@ -1133,16 +1132,17 @@ export default function App() {
               >
                 <h1
                   style={{
-                    fontSize: "clamp(3.2em, 8vw, 7em)",
+                    fontSize: "clamp(4em, 10vw, 8em)",
                     fontWeight: 900,
-                    letterSpacing: "-0.06em",
-                    lineHeight: 0.95,
+                    letterSpacing: "-0.07em",
+                    lineHeight: 0.9,
                     margin: 0,
                     background: "linear-gradient(135deg, #f472b6 0%, #a78bfa 35%, #60a5fa 70%)",
                     backgroundSize: "300% auto",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     animation: "gradientShift 4s ease infinite",
+                    filter: "drop-shadow(0 0 30px rgba(167,139,250,0.3))",
                   }}
                 >
                   从需求
