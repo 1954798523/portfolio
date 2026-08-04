@@ -1182,7 +1182,6 @@ export default function App() {
                 {[
                   { end: 7, suffix: "", lbl: "已交付项目" },
                   { end: 2, suffix: " 月", lbl: "平均交付周期" },
-                  { end: 0, suffix: "", lbl: "未完成项目" },
                 ].map((stat, i) => (
                   <AnimatedNumber key={i} delay={2.2 + i * 0.2} {...stat} />
                 ))}
