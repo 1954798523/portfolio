@@ -487,7 +487,7 @@ function FloatingEmbers() {
   return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1 }} />;
 }
 
-// ====== PROJECT CARD ======
+// ====== PROJECT CARD (Poster Style) ======
 function ProjectCard({ project, index, onClick }) {
   const cardRef = useRef(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -496,106 +496,143 @@ function ProjectCard({ project, index, onClick }) {
     const rect = cardRef.current.getBoundingClientRect();
     const cx = (e.clientX - rect.left) / rect.width - 0.5;
     const cy = (e.clientY - rect.top) / rect.height - 0.5;
-    setTilt({ x: cy * -10, y: cx * 10 });
+    setTilt({ x: cy * -6, y: cx * 6 });
   };
-
   const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
 
-  const borderColors = [
-    "rgba(167,139,250,0.4),rgba(96,165,250,0.2)",
-    "rgba(244,114,182,0.4),rgba(167,139,250,0.2)",
-    "rgba(52,211,153,0.4),rgba(96,165,250,0.2)",
-    "rgba(251,191,36,0.4),rgba(244,114,182,0.2)",
-    "rgba(96,165,250,0.4),rgba(52,211,153,0.2)",
-    "rgba(167,139,250,0.4),rgba(251,191,36,0.2)",
-    "rgba(244,114,182,0.4),rgba(52,211,153,0.2)",
-  ];
+  const hero = project.metrics[0];
 
   return (
     <motion.div
       ref={cardRef}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.06 }}
+      transition={{ duration: 0.5, delay: index * 0.06 }}
       viewport={{ once: true, margin: "-40px" }}
       onClick={() => onClick(project.id)}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ y: -4 }}
       style={{
-        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-        transition: "transform 0.1s ease-out, box-shadow 0.3s",
+        transform: `perspective(1200px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+        transition: "transform 0.15s ease-out",
+        cursor: "pointer",
+        position: "relative",
       }}
     >
       <BorderGlow
-        borderRadius={16}
-        glowRadius={36}
-        backgroundColor="#111118"
-        colors={[borderColors[index % borderColors.length].split(",")[0], "#c084fc", "#38bdf8"]}
+        borderRadius={20}
+        glowRadius={40}
+        backgroundColor="#0d0d16"
+        colors={[project.color, "#c084fc", "#38bdf8"]}
       >
-        <div
+        <motion.div
+          whileHover="hover"
           style={{
-            display: "grid",
-            gridTemplateColumns: "280px 1fr",
-            cursor: "pointer",
+            padding: "clamp(32px, 5vw, 48px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 40,
+            flexWrap: "wrap",
+            position: "relative",
+            overflow: "hidden",
+            minHeight: 160,
           }}
         >
-          {/* Image placeholder */}
-          <div
-            style={{
-              background: `linear-gradient(135deg, #151525, #1c1c32)`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              minHeight: 200,
-              position: "relative",
-              overflow: "hidden",
-              borderRadius: "16px 0 0 16px",
-            }}
-          >
-            <div style={{ fontSize: "0.8em", color: "#888", textAlign: "center", padding: 20, position: "relative", zIndex: 1 }}>
-              <span style={{ fontSize: "2.4em", display: "block", marginBottom: 10 }}>{project.badge === "AI 基础设施" ? "🎨" : project.badge === "LLM Agent" ? "🤖" : project.badge === "桌面工具" ? "📋" : project.badge === "内部工具" ? "🌐" : project.badge === "算法+插件" ? "💎" : project.badge === "批处理管线" ? "📄" : "🖼️"}</span>
-              {project.img}
-              <br />
-              <span style={{ fontSize: "0.8em", opacity: 0.5 }}>[截图待替换]</span>
-            </div>
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.03), transparent)",
-                animation: "shimmer 3s infinite",
-              }}
-            />
-          </div>
-          {/* Info */}
-          <div style={{ padding: "28px 30px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6, gap: 8, flexWrap: "wrap" }}>
-              <span style={{ fontSize: "1.18em", fontWeight: 700, color: "#fff", letterSpacing: "-0.02em" }}>{project.name}</span>
-              <span
-                style={{
-                  fontSize: "0.68em",
-                  fontWeight: 600,
-                  color: "#a78bfa",
-                  background: "rgba(167,139,250,0.12)",
-                  padding: "4px 12px",
-                  borderRadius: 20,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {project.badge}
-              </span>
-            </div>
-            <p style={{ color: "#888", fontSize: "0.86em", marginBottom: 12, lineHeight: 1.6 }}>{project.desc}</p>
-            <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-              {project.tags.map((t) => (
-                <span key={t} style={{ fontSize: "0.66em", background: "#1a1a2a", color: "#888", padding: "3px 10px", borderRadius: 5, fontWeight: 500 }}>
+          {/* Background gradient blobs */}
+          <div style={{
+            position: "absolute", top: -60, right: -40,
+            width: 300, height: 300, borderRadius: "50%",
+            background: `radial-gradient(circle, ${project.color}22, transparent 70%)`,
+            pointerEvents: "none",
+          }} />
+          <div style={{
+            position: "absolute", bottom: -40, left: "30%",
+            width: 200, height: 200, borderRadius: "50%",
+            background: `radial-gradient(circle, ${project.color}15, transparent 70%)`,
+            pointerEvents: "none",
+          }} />
+
+          {/* Left: info */}
+          <div style={{ position: "relative", zIndex: 1, flex: "1 1 300px" }}>
+            <span style={{
+              fontSize: "0.64em", fontWeight: 700, textTransform: "uppercase",
+              letterSpacing: "0.1em", color: project.color, marginBottom: 10,
+              background: `${project.color}18`, padding: "4px 10px", borderRadius: 6,
+              display: "inline-block",
+            }}>
+              {project.badge}
+            </span>
+            <h3 style={{
+              fontSize: "clamp(1.3em, 2.5vw, 1.6em)", fontWeight: 800,
+              color: "#fff", letterSpacing: "-0.04em", margin: "12px 0 6px",
+              lineHeight: 1.2,
+            }}>
+              {project.name}
+            </h3>
+            <p style={{
+              color: "#777", fontSize: "0.82em", lineHeight: 1.5,
+              maxWidth: 420, margin: 0,
+            }}>
+              {project.desc}
+            </p>
+            <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 14 }}>
+              {project.tags.slice(0, 4).map((t, i) => (
+                <span key={t} style={{
+                  fontSize: "0.64em", fontWeight: 500,
+                  color: `color-mix(in srgb, ${project.color} 80%, white)`,
+                  background: `${project.color}10`,
+                  padding: "3px 10px", borderRadius: 12,
+                }}>
                   {t}
                 </span>
               ))}
+              {project.tags.length > 4 && (
+                <span style={{ fontSize: "0.64em", color: "#555", padding: "3px 8px" }}>
+                  +{project.tags.length - 4}
+                </span>
+              )}
             </div>
           </div>
-        </div>
+
+          {/* Right: hero metric — poster style */}
+          <motion.div
+            variants={{ hover: { scale: 1.06 } }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: "relative", zIndex: 1,
+              flex: "0 0 auto",
+              textAlign: "right",
+            }}
+          >
+            <div style={{
+              fontSize: "clamp(3.5em, 8vw, 6em)",
+              fontWeight: 900,
+              letterSpacing: "-0.06em",
+              lineHeight: 0.85,
+              background: `linear-gradient(135deg, ${project.color}, ${(function() {
+                const p = project.color;
+                if (p === "#a78bfa") return "#c084fc";
+                if (p === "#f472b6") return "#f9a8d4";
+                if (p === "#34d399") return "#6ee7b7";
+                if (p === "#60a5fa") return "#93c5fd";
+                if (p === "#fbbf24") return "#fcd34d";
+                return "#c084fc";
+              })()})`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              filter: "drop-shadow(0 0 20px rgba(167,139,250,0.15))",
+            }}>
+              {hero.big}
+            </div>
+            <div style={{
+              fontSize: "0.72em", color: "#666", fontWeight: 500,
+              marginTop: 4, textTransform: "uppercase", letterSpacing: "0.06em",
+            }}>
+              {hero.lbl}
+            </div>
+          </motion.div>
+        </motion.div>
       </BorderGlow>
     </motion.div>
   );
