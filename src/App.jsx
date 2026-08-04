@@ -337,8 +337,8 @@ function VideoBackground() {
           width: "100%",
           height: "100%",
           objectFit: "cover",
-          opacity: 0.35,
-          filter: "saturate(0.6) brightness(0.7)",
+          opacity: 0.7,
+          filter: "saturate(1.1) brightness(1.0)",
         }}
         src="./bg.mp4"
       />
@@ -346,7 +346,7 @@ function VideoBackground() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(ellipse at 50% 40%, rgba(6,6,12,0.4) 0%, rgba(6,6,12,0.85) 70%)",
+          background: "radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(6,6,12,0.75) 75%)",
         }}
       />
     </div>
@@ -358,10 +358,10 @@ function AuroraBackground() {
   return (
     <div style={{ position: "absolute", pointerEvents: "none", zIndex: 0, inset: 0, overflow: "hidden" }}>
       {[
-        { size: "60vw", color: "hsla(268,100%,76%,0.12)", x: "60%", y: "30%", dur: 28, dx: -80, dy: 60 },
-        { size: "45vw", color: "hsla(349,100%,74%,0.10)", x: "20%", y: "50%", dur: 32, dx: 100, dy: -50 },
-        { size: "50vw", color: "hsla(192,100%,64%,0.08)", x: "70%", y: "70%", dur: 36, dx: -60, dy: -70 },
-        { size: "35vw", color: "hsla(283,100%,70%,0.07)", x: "40%", y: "20%", dur: 24, dx: 70, dy: 40 },
+        { size: "60vw", color: "hsla(268,100%,76%,0.18)", x: "60%", y: "30%", dur: 28, dx: -80, dy: 60 },
+        { size: "45vw", color: "hsla(349,100%,74%,0.15)", x: "20%", y: "50%", dur: 32, dx: 100, dy: -50 },
+        { size: "50vw", color: "hsla(192,100%,64%,0.12)", x: "70%", y: "70%", dur: 36, dx: -60, dy: -70 },
+        { size: "35vw", color: "hsla(283,100%,70%,0.10)", x: "40%", y: "20%", dur: 24, dx: 70, dy: 40 },
       ].map((b, i) => (
         <motion.div
           key={i}
@@ -397,7 +397,7 @@ function RotatingRing() {
         width: "min(70vw, 500px)",
         height: "min(70vw, 500px)",
         zIndex: 0,
-        opacity: 0.25,
+        opacity: 0.45,
       }}
     >
       <motion.svg
