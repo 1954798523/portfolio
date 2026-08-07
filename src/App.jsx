@@ -112,6 +112,27 @@ const PROJECTS = [
     img: "原图 vs 施工模板对比",
   },
   {
+    id: "dotmaker",
+    name: "圆点点阵生成工具",
+    badge: "图像处理",
+    desc: "任意图片→等距彩色圆点点阵，原色直出无压缩。从 K-Means 聚类方案迭代至区域平均采样，花叶轮廓清晰可辨。",
+    tags: ["PIL/Pillow", "PyInstaller", "NumPy", "超采样"],
+    color: "#38bdf8",
+    metrics: [
+      { big: "32761", lbl: "圆点 (181×181)" },
+      { big: "1.4mm", lbl: "圆点直径" },
+      { big: "27MB", lbl: "单文件 EXE" },
+    ],
+    pain: "钻石画 ComfyUI 节点能生成 SVG 施工模板，但 K-Means 聚类把颜色压到 16 色后丢失了大量细节——花辨不清花瓣、叶看不出叶脉。客户要的不是几种颜色的色块，而是能看清原图内容的点阵效果。91×91 个点根本不够，放大后就是模糊的马赛克。",
+    solution: [
+      "推翻 K-Means 聚类，改用区域平均直接采样：每个圆点取原图对应网格区域的平均 RGB，不做任何颜色压缩",
+      "点径从 2.8mm 降至 1.4mm，格数从 91×91 翻到 181×181（32761 个点），细节是原来的 4 倍",
+      "参数可调：画布尺寸、圆点直径、DPI、背景色，改一行适配不同规格",
+      "3× 超采样渲染 + LANCZOS 降采样消除锯齿，PyInstaller 打包 27MB 单文件 EXE，拖拽即用",
+    ],
+    img: "原图 vs 点阵效果对比",
+  },
+  {
     id: "pdf",
     name: "PDF 说明书多语言翻译",
     badge: "批处理管线",
@@ -962,7 +983,7 @@ function ContactPage() {
         >
           <span style={{ position: "relative", zIndex: 1 }}>获取项目介绍</span>
         </motion.button>
-        <p style={{ fontSize: "0.72em", color: "#888", marginTop: 18 }}>7 个 AI 项目 · 从需求到交付全流程覆盖</p>
+        <p style={{ fontSize: "0.72em", color: "#888", marginTop: 18 }}>8 个 AI 项目 · 从需求到交付全流程覆盖</p>
           </div>
         </BorderGlow>
       </motion.div>
@@ -1202,7 +1223,7 @@ export default function App() {
                   marginBottom: 48,
                 }}
               >
-                不等资源 · 不限技术栈 · 快速交付。7 个 AI 项目已投产，自建 RTX 5090 GPU 算力平台。
+                不等资源 · 不限技术栈 · 快速交付。8 个 AI 项目已投产，自建 RTX 5090 GPU 算力平台。
               </motion.p>
 
               {/* Act 5 — stats with count-up */}
@@ -1218,7 +1239,7 @@ export default function App() {
                 }}
               >
                 {[
-                  { end: 7, suffix: "", lbl: "已交付项目" },
+                  { end: 8, suffix: "", lbl: "已交付项目" },
                   { end: 2, suffix: " 月", lbl: "平均交付周期" },
                 ].map((stat, i) => (
                   <AnimatedNumber key={i} delay={2.2 + i * 0.2} {...stat} />
@@ -1262,6 +1283,7 @@ export default function App() {
                       "DeepSeek API", "Qwen-VL", "EasyOCR", "PyInstaller", "OneTrainer",
                       "Hermes Gateway", "K-Means", "SVG", "Waitress", "Obsidian",
                       "HuggingFace", "SDXL", "LoRA", "tkinter", "RMBG-2.0",
+                      "PIL/Pillow", "NumPy", "LANCZOS",
                     ].map((tech, i) => (
                       <span
                         key={`${round}-${i}`}
@@ -1292,7 +1314,7 @@ export default function App() {
               >
                 <GlassIcons
                   items={PROJECTS.map((p, i) => ({
-                    icon: "🎨🤖📋🌐💎📄🖼️"[i] || "🔹",
+                    icon: "🎨🤖📋🌐💎📄🖼️🔵"[i] || "🔹",
                     label: p.name,
                     color: p.color,
                   }))}
@@ -1302,7 +1324,7 @@ export default function App() {
               {/* Capabilities highlight */}
               <div style={{ marginTop: 80, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
                 {[
-                  { t: "7 个项目", d: "全部闭环交付\n已在生产环境运行" },
+                  { t: "8 个项目", d: "全部闭环交付\n已在生产环境运行" },
                   { t: "2 个月", d: "平均交付周期\n从需求确认到上线" },
                   { t: "4 个 AI 服务", d: "自建 GPU 服务器 7×24\nComfyUI + ESRGAN + SVG + 工具箱" },
                   { t: "5 项能力", d: "AI 应用 · 计算机视觉\n全栈开发 · 运维 · 项目管理" },
