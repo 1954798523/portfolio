@@ -951,21 +951,49 @@ function ContactPage() {
       >
         <div style={{ fontSize: "0.74em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#a78bfa", marginBottom: 10 }}>ABOUT</div>
         <h2 style={{ fontSize: "1.4em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", marginBottom: 20 }}>关于我</h2>
-        <div style={{ background: "#111118", border: "1px solid #1e1e30", borderRadius: 16, padding: "28px 32px", lineHeight: 1.9, color: "#aaa", fontSize: "0.92em" }}>
-          <p style={{ margin: "0 0 12px" }}>
-            我是 <span style={{ color: "#fff", fontWeight: 600 }}>王梓宇</span>,AI 应用工程师,干的事一句话:<span style={{ color: "#a78bfa" }}>让大模型真的去干活,而不是只会聊天</span>。
+
+        <div style={{ background: "#111118", border: "1px solid #1e1e30", borderRadius: 16, padding: "32px 36px", position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #a78bfa, #f472b6, #60a5fa)" }} />
+
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: "clamp(1.8em, 4vw, 2.4em)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.1, background: "linear-gradient(135deg, #a78bfa, #f472b6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              王梓宇
+            </div>
+            <div style={{ marginTop: 10, fontSize: "0.9em", color: "#ccc" }}>
+              AI 应用工程师 · <span style={{ color: "#a78bfa" }}>让大模型真的去干活,而不是只会聊天</span>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12, marginBottom: 24 }}>
+            {[
+              { big: "40%", lbl: "高频问题响应提速" },
+              { big: "7 万条", lbl: "强化训练数据" },
+              { big: "8 个", lbl: "AI 工具上线使用" },
+              { big: "1 分半", lbl: "报价单核对耗时" },
+            ].map((m, i) => (
+              <motion.div
+                key={m.lbl}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.15 + i * 0.08 }}
+                style={{ background: "#0d0d14", border: "1px solid #1e1e30", borderRadius: 12, padding: "16px 14px", textAlign: "center" }}
+              >
+                <div style={{ fontSize: "1.5em", fontWeight: 900, background: "linear-gradient(135deg, #a78bfa, #60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: "-0.03em", lineHeight: 1.15 }}>{m.big}</div>
+                <div style={{ marginTop: 4, fontSize: "0.72em", color: "#777" }}>{m.lbl}</div>
+              </motion.div>
+            ))}
+          </div>
+
+          <p style={{ margin: "0 0 20px", color: "#aaa", fontSize: "0.92em", lineHeight: 1.9 }}>
+            保险公司的客服机器人是我从研发一路带到上线的——检索、微调、强化训练都亲手跑过;现在这家公司的 AI 工具也是我一个个攒起来的:从装 GPU 工作站开始,8 个工具全部上线,同事天天在用,外箱尺寸 QQ 群秒查,报价单核对从一两个小时压到 1 分半。我的习惯:从业务痛点出发选技术,不追名词,每个项目算得清账,需求、开发、部署、教同事用一条龙走完。
           </p>
-          <p style={{ margin: "0 0 12px" }}>
-            保险公司的客服机器人是我从研发一路带到上线的——检索、微调、7 万条数据的强化训练都亲手跑过,高频问题响应快了 40%。这个数字我一直记着,因为它说明我做的事真的有用。现在这家公司的 AI 工具也是我一个个攒起来的:从装 GPU 工作站开始,8 个工具全部上线,同事天天在用——外箱尺寸 QQ 群秒查,报价单核对从一两个小时压到 1 分半。
-          </p>
-          <p style={{ margin: 0 }}>
-            我的工作习惯:从业务痛点出发选技术,不追名词,每个项目算得清账;需求、开发、部署、教同事用,一条龙自己走完。
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: 10, marginTop: 16, justifyContent: "center" }}>
-          {["务实", "学得快", "交付完整"].map((k) => (
-            <span key={k} style={{ fontSize: "0.8em", fontWeight: 600, color: "#e4e4ee", background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.25)", padding: "6px 16px", borderRadius: 20 }}>{k}</span>
-          ))}
+
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {["务实", "学得快", "交付完整"].map((k) => (
+              <span key={k} style={{ fontSize: "0.8em", fontWeight: 600, color: "#e4e4ee", background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.25)", padding: "6px 16px", borderRadius: 20 }}>{k}</span>
+            ))}
+          </div>
         </div>
       </motion.div>
 
