@@ -30,7 +30,7 @@ const PROJECTS = [
     id: "carton",
     name: "外箱尺寸查询系统",
     badge: "LLM Agent",
-    desc: "将散落在 101 个 Excel 中的产品外箱数据提取整合为知识库，通过 LLM Agent 实现自然语言查询，员工在 QQ 群即可秒查尺寸。",
+    desc: "将散落在 101 个 Excel 中的产品外箱数据提取、去重整合为知识库，通过 LLM Agent 实现自然语言查询，员工在 QQ 群即可秒查尺寸。",
     tags: ["Hermes", "DeepSeek", "QQ Bot", "Obsidian"],
     color: "#f472b6",
     metrics: [
@@ -41,7 +41,7 @@ const PROJECTS = [
     pain: "公司产品的外箱尺寸信息分散在各部门的 101 个 Excel 文件中，格式五花八门——有的用标签页分类，有的用正则匹配，有的固定列布局。员工查一个 SKU 的尺寸要翻几个文件找几分钟，业务高峰期严重拖慢出货节奏。更麻烦的是，这些 Excel 持续更新，没有人知道\"那个圆的圣诞挂件\"对应哪个产品编号。",
     solution: [
       "逐文件解析 101 个 Excel，针对不同格式编写专用提取逻辑（标签名、正则、CBM 计算、固定列），每个文件单独验证通过",
-      "汇总为统一 JSON 数据集（111KB / 353 条），作为 LLM 的知识底座",
+      "去重后汇总为统一 JSON 数据集（111KB / 353 条），作为 LLM 的知识底座",
       "核心决策：放弃传统数据库查询方案，选择 LLM 原生方案——大模型天然理解模糊描述和口语化表达",
       "基于 Hermes Gateway 搭建 QQ Bot，编写 199 行 SOUL.md 定义 Agent 行为，建立五级反馈闭环（赞/踩/纠错/补充/标注），数据持续沉淀至 Obsidian 知识库",
     ],
@@ -52,15 +52,15 @@ const PROJECTS = [
     id: "ocr",
     name: "报价单 OCR 自动匹配",
     badge: "桌面工具",
-    desc: "离线 OCR 桌面工具，自动识别报价单中的产品编号与价格，与内部数据库匹配核对，将 3 小时的手工流程压缩到 30 秒。",
+    desc: "离线 OCR 桌面工具，自动识别报价单中的产品编号与价格，与内部数据库匹配核对，将 1-2 小时的手工核对压缩到 1.5 分钟。",
     tags: ["EasyOCR", "tkinter", "PyInstaller", "DeepSeek"],
     color: "#34d399",
     metrics: [
-      { big: "360×", lbl: "效率提升" },
+      { big: "60×+", lbl: "效率提升" },
       { big: "133", lbl: "内部产品数" },
       { big: "离线", lbl: "无需网络" },
     ],
-    pain: "外贸业务中，供应商发来的报价单格式千奇百怪——有人拍照发微信、有人截图 Excel、有人发 PDF 扫描件。每份报价单约 200 行产品，业务员需要手动把报价单上的型号和价格跟内部 133 个产品逐一核对。一份报价单核对下来约 3 小时，眼疲劳出错率高，且业务高峰期同时来五六份报价单根本应付不过来。",
+    pain: "外贸业务中，供应商发来的报价单格式千奇百怪——有人拍照发微信、有人截图 Excel、有人发 PDF 扫描件。每份报价单约 200 行产品，业务员需要手动把报价单上的型号和价格跟内部 133 个产品逐一核对。一份报价单核对下来约 1-2 小时，眼疲劳出错率高，且业务高峰期同时来五六份报价单根本应付不过来。",
     solution: [
       "EasyOCR 离线引擎提取文字，适配拍照、截图、PDF 扫描等多种输入格式，不依赖网络",
       "DeepSeek API 做结构化信息抽取——从 OCR 的脏文本中精准提取产品编号和价格，容错率远超正则匹配",
@@ -73,7 +73,7 @@ const PROJECTS = [
     id: "translator",
     name: "AI 提示词翻译官",
     badge: "内部工具",
-    desc: "三模型 AI 管道：视觉分析参考图 → 口语转专业 prompt → 一键抠图。单 HTML 文件，微信发给同事就能用。",
+    desc: "三模型 AI 管道：视觉分析参考图 → 口语转专业 prompt → 一键抠图。单 HTML 文件，零部署成本，同事收到即可使用。",
     tags: ["Qwen-VL", "DeepSeek", "RMBG-2.0", "SPA"],
     color: "#fbbf24",
     metrics: [
@@ -81,7 +81,7 @@ const PROJECTS = [
       { big: "5 维度", lbl: "结构化输出" },
       { big: "1 文件", lbl: "零部署成本" },
     ],
-    pain: "公司花了 4 万元采购 AI 图像平台，但非技术同事根本用不起来。他们输入\"好看的杯子\"，平台生成的图片完全不可用——因为他们不知道 FLUX 需要的是 'minimalist ceramic mug, soft studio lighting, 8K, product photography' 这样的专业 prompt。平台的 ROI 极低，但退不了款。",
+    pain: "团队此前采购的商用 AI 图像平台操作门槛高，非技术同事输入\"好看的杯子\"这类口语描述，生成结果完全不可用——因为 FLUX 这类模型需要 'minimalist ceramic mug, soft studio lighting, 8K, product photography' 这样的专业 prompt。高价采购的平台利用率极低，核心瓶颈在于提示词门槛。",
     solution: [
       "第一环 Qwen-VL 视觉分析：上传参考图 → 自动分析构图、光影、色调、景深、材质、风格、角度、背景 8 个维度",
       "第二环 DeepSeek 语言转换：口语化中文需求 + 视觉分析结果 → 五维英文 prompt（主体+风格+构图+光影+细节）",
@@ -94,7 +94,7 @@ const PROJECTS = [
     id: "diamond",
     name: "钻石画施工模板生成",
     badge: "算法+插件",
-    desc: "用 K-Means 聚类算法替代设计师手工分色，将图片自动转为带色号编码的 SVG 施工模板，半日工作压缩到分钟级。",
+    desc: "面向钻石画行业，用 K-Means 聚类算法替代设计师手工分色，将图片自动转为带色号编码的 SVG 施工模板，半日工作压缩到分钟级。",
     tags: ["K-Means", "Lab色彩", "SVG", "ComfyUI插件"],
     color: "#60a5fa",
     metrics: [
@@ -115,7 +115,7 @@ const PROJECTS = [
     id: "dotmaker",
     name: "圆点点阵生成工具",
     badge: "图像处理",
-    desc: "任意图片→等距彩色圆点点阵，原色直出无压缩。从 K-Means 聚类方案迭代至区域平均采样，花叶轮廓清晰可辨。",
+    desc: "装饰画行业定制：任意图片→等距彩色圆点点阵，原色直出无压缩。从 K-Means 聚类方案迭代至区域平均采样，花叶轮廓清晰可辨。",
     tags: ["PIL/Pillow", "PyInstaller", "NumPy", "超采样"],
     color: "#38bdf8",
     metrics: [
@@ -1223,7 +1223,7 @@ export default function App() {
                   marginBottom: 48,
                 }}
               >
-                不等资源 · 不限技术栈 · 快速交付。8 个 AI 项目已投产，自建 RTX 5090 GPU 算力平台。
+                不等资源 · 不限技术栈 · 快速交付。8 个 AI 项目落地使用，自建 RTX 5090 GPU 算力平台。
               </motion.p>
 
               {/* Act 5 — stats with count-up */}
@@ -1324,7 +1324,7 @@ export default function App() {
               {/* Capabilities highlight */}
               <div style={{ marginTop: 80, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
                 {[
-                  { t: "8 个项目", d: "全部闭环交付\n已在生产环境运行" },
+                  { t: "8 个项目", d: "全部闭环交付\n已投入实际使用" },
                   { t: "2 个月", d: "平均交付周期\n从需求确认到上线" },
                   { t: "4 个 AI 服务", d: "自建 GPU 服务器 7×24\nComfyUI + ESRGAN + SVG + 工具箱" },
                   { t: "5 项能力", d: "AI 应用 · 计算机视觉\n全栈开发 · 运维 · 项目管理" },
