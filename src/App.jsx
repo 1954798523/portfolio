@@ -1302,6 +1302,34 @@ export default function App() {
                 </motion.div>
               </div>
 
+              {/* About section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                style={{ maxWidth: 720, margin: "0 auto", marginTop: 80 }}
+              >
+                <div style={{ fontSize: "0.74em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#a78bfa", marginBottom: 10 }}>ABOUT</div>
+                <h2 style={{ fontSize: "1.4em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", marginBottom: 20 }}>关于我</h2>
+                <div style={{ background: "#111118", border: "1px solid #1e1e30", borderRadius: 16, padding: "28px 32px", lineHeight: 1.9, color: "#aaa", fontSize: "0.92em" }}>
+                  <p style={{ margin: "0 0 12px" }}>
+                    我是 <span style={{ color: "#fff", fontWeight: 600 }}>王梓宇</span>,AI 应用工程师,干的事一句话:<span style={{ color: "#a78bfa" }}>让大模型真的去干活,而不是只会聊天</span>。
+                  </p>
+                  <p style={{ margin: "0 0 12px" }}>
+                    保险公司的客服机器人是我从研发一路带到上线的——检索、微调、7 万条数据的强化训练都亲手跑过,高频问题响应快了 40%。这个数字我一直记着,因为它说明我做的事真的有用。现在这家公司的 AI 工具也是我一个个攒起来的:从装 GPU 工作站开始,8 个工具全部上线,同事天天在用——外箱尺寸 QQ 群秒查,报价单核对从一两个小时压到 1 分半。
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    我的工作习惯:从业务痛点出发选技术,不追名词,每个项目算得清账;需求、开发、部署、教同事用,一条龙自己走完。
+                  </p>
+                </div>
+                <div style={{ display: "flex", gap: 10, marginTop: 16, justifyContent: "center" }}>
+                  {["务实", "学得快", "交付完整"].map((k) => (
+                    <span key={k} style={{ fontSize: "0.8em", fontWeight: 600, color: "#e4e4ee", background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.25)", padding: "6px 16px", borderRadius: 20 }}>{k}</span>
+                  ))}
+                </div>
+              </motion.div>
+
               {/* GlassIcons - Project navigation */}
               <div
                 style={{ marginTop: 60 }}
