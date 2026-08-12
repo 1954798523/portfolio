@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import GlassIcons from "./components/GlassIcons";
-import BorderGlow from "./components/BorderGlow/BorderGlow";
+
+const SERIF = "'Playfair Display','Noto Serif SC','Source Han Serif SC','Songti SC','SimSun',serif";
+const SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif";
+const LIME = "#d4ff00";
+const INK = "#f4f4f2";
+const SUB = "#a3a3a3";
+const FAINT = "#666";
+const LINE = "#1f1f1f";
 
 // ====== DATA ======
 const PROJECTS = [
@@ -178,140 +184,84 @@ const PROJECTS = [
 
 const DIFFS = [
   {
-    icon: "🔗",
+    icon: "01",
     title: "端到端交付",
     text: "需求分析到上线运维全流程覆盖。不依赖外部资源，项目不因跨团队协调而卡顿，交付周期缩短 70%。",
-    color: "#a78bfa",
   },
   {
-    icon: "🔧",
+    icon: "02",
     title: "技术栈灵活",
     text: "Python、React、ComfyUI、DingTalk Bot、桌面应用——根据业务场景选择最优方案，不为技术栈设限。",
-    color: "#60a5fa",
   },
   {
-    icon: "🖥️",
+    icon: "03",
     title: "自建 AI 基础设施",
     text: "自建 GPU 工作站，模型部署与训练硬件平台，7×24 稳定运行，全流程独立可控。",
-    color: "#34d399",
   },
   {
-    icon: "⚡",
+    icon: "04",
     title: "快速验证迭代",
     text: "发现问题当日出原型，用实际反馈驱动迭代，而非文档驱动开发。原型平均 2 天，完整交付约 2 个月。",
-    color: "#fbbf24",
   },
 ];
 
 const SKILLS = [
-  { label: "AI 应用落地", w: "92%", note: "LLM Agent · RAG · OCR · 视觉", colors: ["#a78bfa", "#f472b6"] },
-  { label: "计算机视觉", w: "80%", note: "超分 · 矢量化 · LoRA 训练", colors: ["#60a5fa", "#a78bfa"] },
-  { label: "全栈开发", w: "85%", note: "Python · HTML/JS · 桌面 GUI", colors: ["#34d399", "#60a5fa"] },
-  { label: "服务器运维", w: "78%", note: "WinServer · SSH · GPU裸机", colors: ["#fbbf24", "#f472b6"] },
-  { label: "项目管理", w: "95%", note: "需求→设计→开发→部署→交付", colors: ["#a78bfa", "#34d399"] },
+  { label: "AI 应用落地", w: "92%", note: "LLM Agent · RAG · OCR · 视觉" },
+  { label: "计算机视觉", w: "80%", note: "超分 · 矢量化 · LoRA 训练" },
+  { label: "全栈开发", w: "85%", note: "Python · HTML/JS · 桌面 GUI" },
+  { label: "服务器运维", w: "78%", note: "WinServer · SSH · GPU裸机" },
+  { label: "项目管理", w: "95%", note: "需求→设计→开发→部署→交付" },
 ];
 
-// ====== PARTICLES CANVAS ======
-function Particles() {
+// ====== FLOATING EMBERS (white/lime dust) ======
+function FloatingEmbers() {
+  const embers = useRef([]);
   const canvasRef = useRef(null);
+
   useEffect(() => {
     const c = canvasRef.current;
     const ctx = c.getContext("2d");
-    let w, h, ps = [], anim;
-    function resize() {
-      w = c.width = window.innerWidth;
-      h = c.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener("resize", resize);
-    for (let i = 0; i < 50; i++)
-      ps.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
-        r: Math.random() * 1.5 + 0.5,
-        a: Math.random() * 0.3 + 0.1,
+    const rect = c.parentElement.getBoundingClientRect();
+    c.width = rect.width;
+    c.height = rect.height;
+
+    const colors = ["#d4ff00", "#f4f4f2", "#f4f4f2"];
+    const count = 14;
+    for (let i = 0; i < count; i++) {
+      embers.current.push({
+        x: Math.random() * c.width,
+        y: Math.random() * c.height,
+        r: Math.random() * 1.2 + 0.4,
+        vy: -(Math.random() * 0.22 + 0.06),
+        vx: (Math.random() - 0.5) * 0.15,
+        alpha: Math.random() * 0.28 + 0.08,
+        color: colors[i % colors.length],
       });
+    }
+
+    let anim;
     function draw() {
-      ctx.clearRect(0, 0, w, h);
-      for (let i = 0; i < ps.length; i++) {
-        const p = ps[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = w;
-        if (p.x > w) p.x = 0;
-        if (p.y < 0) p.y = h;
-        if (p.y > h) p.y = 0;
+      ctx.clearRect(0, 0, c.width, c.height);
+      for (const e of embers.current) {
+        e.y += e.vy;
+        e.x += e.vx;
+        if (e.y < -10) { e.y = c.height + 10; e.x = Math.random() * c.width; }
+        if (e.x < -10) e.x = c.width + 10;
+        if (e.x > c.width + 10) e.x = -10;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(167,139,250,${p.a})`;
+        ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+        ctx.fillStyle = e.color;
+        ctx.globalAlpha = e.alpha;
         ctx.fill();
-        for (let j = i + 1; j < ps.length; j++) {
-          const q = ps[j],
-            dx = p.x - q.x,
-            dy = p.y - q.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(q.x, q.y);
-            ctx.strokeStyle = `rgba(167,139,250,${0.06 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
+        ctx.globalAlpha = 1;
       }
       anim = requestAnimationFrame(draw);
     }
     draw();
     return () => cancelAnimationFrame(anim);
   }, []);
-  return <canvas ref={canvasRef} style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }} />;
-}
 
-// ====== CURSOR GLOW ======
-function CursorGlow() {
-  const ref = useRef(null);
-  useEffect(() => {
-    let ticking = false;
-    const onMove = (e) => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          ref.current.style.left = e.clientX + "px";
-          ref.current.style.top = e.clientY + "px";
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    const onLeave = () => (ref.current.style.opacity = "0");
-    const onEnter = () => (ref.current.style.opacity = "1");
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseleave", onLeave);
-    document.addEventListener("mouseenter", onEnter);
-    return () => {
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseleave", onLeave);
-      document.removeEventListener("mouseenter", onEnter);
-    };
-  }, []);
-  return (
-    <div
-      ref={ref}
-      style={{
-        position: "fixed",
-        width: 300,
-        height: 300,
-        borderRadius: "50%",
-        pointerEvents: "none",
-        zIndex: 0,
-        background: "radial-gradient(circle, rgba(167,139,250,0.12), transparent 70%)",
-        transform: "translate(-50%,-50%)",
-        transition: "opacity 0.3s",
-      }}
-    />
-  );
+  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }} />;
 }
 
 // ====== SCROLL PROGRESS ======
@@ -335,517 +285,154 @@ function ScrollProgress() {
         height: 2,
         zIndex: 2000,
         pointerEvents: "none",
-        background: "linear-gradient(90deg, #a78bfa, #f472b6, #60a5fa, #34d399)",
+        background: LIME,
         width: `${w}%`,
         transition: "width 0.15s linear",
-        borderRadius: "0 2px 2px 0",
       }}
     />
   );
 }
 
-// ====== VIDEO BACKGROUND ======
-function VideoBackground() {
+// ====== PROJECT LIST ROW ======
+function ProjectRow({ project, index, onClick }) {
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: -1, overflow: "hidden" }}>
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          opacity: 0.85,
-        }}
-        src="./bg.mp4"
-      />
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "linear-gradient(180deg, rgba(6,6,12,0.5) 0%, rgba(6,6,12,0.3) 50%, rgba(6,6,12,0.6) 100%)",
-        }}
-      />
-    </div>
-  );
-}
-
-// ====== AURORA BACKGROUND ======
-function AuroraBackground() {
-  return (
-    <div style={{ position: "absolute", pointerEvents: "none", zIndex: 0, inset: 0, overflow: "hidden" }}>
-      {[
-        { size: "60vw", color: "hsla(268,100%,76%,0.18)", x: "60%", y: "30%", dur: 28, dx: -80, dy: 60 },
-        { size: "45vw", color: "hsla(349,100%,74%,0.15)", x: "20%", y: "50%", dur: 32, dx: 100, dy: -50 },
-        { size: "50vw", color: "hsla(192,100%,64%,0.12)", x: "70%", y: "70%", dur: 36, dx: -60, dy: -70 },
-        { size: "35vw", color: "hsla(283,100%,70%,0.10)", x: "40%", y: "20%", dur: 24, dx: 70, dy: 40 },
-      ].map((b, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: "absolute",
-            width: b.size,
-            height: b.size,
-            borderRadius: "50%",
-            background: `radial-gradient(circle, ${b.color}, transparent 70%)`,
-            filter: "blur(80px)",
-            left: b.x,
-            top: b.y,
-            transform: "translate(-50%, -50%)",
-          }}
-          animate={{ x: [0, b.dx, 0], y: [0, b.dy, 0] }}
-          transition={{ duration: b.dur, repeat: Infinity, ease: "easeInOut", delay: i * -7 }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ====== ROTATING RING ======
-function RotatingRing() {
-  return (
-    <motion.div
-      style={{
-        position: "absolute",
-        pointerEvents: "none",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%,-50%)",
-        width: "min(70vw, 500px)",
-        height: "min(70vw, 500px)",
-        zIndex: 0,
-        opacity: 0.45,
-      }}
-    >
-      <motion.svg
-        viewBox="0 0 200 200"
-        style={{ width: "100%", height: "100%" }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-      >
-        <defs>
-          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#a78bfa" stopOpacity="0" />
-            <stop offset="30%" stopColor="#f472b6" stopOpacity="1" />
-            <stop offset="60%" stopColor="#a78bfa" stopOpacity="0.6" />
-            <stop offset="100%" stopColor="#a78bfa" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <circle cx="100" cy="100" r="94" fill="none" stroke="url(#ringGrad)" strokeWidth="2.5" />
-      </motion.svg>
-      <motion.svg
-        viewBox="0 0 200 200"
-        style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}
-        animate={{ rotate: -360 }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-      >
-        <defs>
-          <linearGradient id="ringGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#60a5fa" stopOpacity="0" />
-            <stop offset="40%" stopColor="#60a5fa" stopOpacity="0.8" />
-            <stop offset="70%" stopColor="#a78bfa" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#60a5fa" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <circle cx="100" cy="100" r="84" fill="none" stroke="url(#ringGrad2)" strokeWidth="1.5" />
-      </motion.svg>
-    </motion.div>
-  );
-}
-
-// ====== FLOATING EMBERS ======
-function FloatingEmbers() {
-  const embers = useRef([]);
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const c = canvasRef.current;
-    const ctx = c.getContext("2d");
-    const rect = c.parentElement.getBoundingClientRect();
-    c.width = rect.width;
-    c.height = rect.height;
-
-    const count = 30;
-    for (let i = 0; i < count; i++) {
-      embers.current.push({
-        x: Math.random() * c.width,
-        y: Math.random() * c.height,
-        r: Math.random() * 1.5 + 0.5,
-        vy: -(Math.random() * 0.3 + 0.1),
-        vx: (Math.random() - 0.5) * 0.2,
-        alpha: Math.random() * 0.5 + 0.2,
-        hue: [268, 349, 192][Math.floor(Math.random() * 3)],
-      });
-    }
-
-    let anim;
-    function draw() {
-      ctx.clearRect(0, 0, c.width, c.height);
-      for (const e of embers.current) {
-        e.y += e.vy;
-        e.x += e.vx;
-        if (e.y < -10) { e.y = c.height + 10; e.x = Math.random() * c.width; }
-        if (e.x < -10) e.x = c.width + 10;
-        if (e.x > c.width + 10) e.x = -10;
-        ctx.beginPath();
-        ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${e.hue}, 100%, 76%, ${e.alpha})`;
-        ctx.shadowColor = `hsla(${e.hue}, 100%, 76%, ${e.alpha})`;
-        ctx.shadowBlur = 6;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-      anim = requestAnimationFrame(draw);
-    }
-    draw();
-    return () => cancelAnimationFrame(anim);
-  }, []);
-
-  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1 }} />;
-}
-
-// ====== PROJECT CARD (Poster Style) ======
-function ProjectCard({ project, index, onClick }) {
-  const cardRef = useRef(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e) => {
-    const rect = cardRef.current.getBoundingClientRect();
-    const cx = (e.clientX - rect.left) / rect.width - 0.5;
-    const cy = (e.clientY - rect.top) / rect.height - 0.5;
-    setTilt({ x: cy * -6, y: cx * 6 });
-  };
-  const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
-
-  const hero = project.metrics[0];
-
-  return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 24 }}
+    <motion.button
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.06 }}
+      transition={{ duration: 0.45, delay: index * 0.04 }}
       viewport={{ once: true, margin: "-40px" }}
       onClick={() => onClick(project.id)}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       style={{
-        transform: `perspective(1200px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-        transition: "transform 0.15s ease-out",
+        display: "flex",
+        alignItems: "baseline",
+        gap: "clamp(16px, 3vw, 40px)",
+        width: "100%",
+        padding: "clamp(20px, 3vw, 30px) 8px",
+        background: "none",
+        border: "none",
+        borderTop: `1px solid ${LINE}`,
         cursor: "pointer",
-        position: "relative",
+        textAlign: "left",
+        color: INK,
+        transition: "background 0.25s, padding 0.25s",
       }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = "#0c0c0c"; e.currentTarget.style.paddingLeft = "24px"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.paddingLeft = "8px"; }}
     >
-      <BorderGlow
-        borderRadius={20}
-        glowRadius={40}
-        backgroundColor="#0d0d16"
-        colors={[project.color, "#c084fc", "#38bdf8"]}
-      >
-        <motion.div
-          whileHover="hover"
-          style={{
-            padding: "clamp(32px, 5vw, 48px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 40,
-            flexWrap: "wrap",
-            position: "relative",
-            overflow: "hidden",
-            minHeight: 160,
-          }}
-        >
-          {/* Background gradient blobs */}
-          <div style={{
-            position: "absolute", top: -60, right: -40,
-            width: 300, height: 300, borderRadius: "50%",
-            background: `radial-gradient(circle, ${project.color}22, transparent 70%)`,
-            pointerEvents: "none",
-          }} />
-          <div style={{
-            position: "absolute", bottom: -40, left: "30%",
-            width: 200, height: 200, borderRadius: "50%",
-            background: `radial-gradient(circle, ${project.color}15, transparent 70%)`,
-            pointerEvents: "none",
-          }} />
-
-          {/* Left: info */}
-          <div style={{ position: "relative", zIndex: 1, flex: "1 1 300px" }}>
-            <span style={{
-              fontSize: "0.64em", fontWeight: 700, textTransform: "uppercase",
-              letterSpacing: "0.1em", color: project.color, marginBottom: 10,
-              background: `${project.color}18`, padding: "4px 10px", borderRadius: 6,
-              display: "inline-block",
-            }}>
-              {project.badge}
-            </span>
-            <h3 style={{
-              fontSize: "clamp(1.3em, 2.5vw, 1.6em)", fontWeight: 800,
-              color: "#fff", letterSpacing: "-0.04em", margin: "12px 0 6px",
-              lineHeight: 1.2,
-            }}>
-              {project.name}
-            </h3>
-            <p style={{
-              color: "#777", fontSize: "0.82em", lineHeight: 1.5,
-              maxWidth: 420, margin: 0,
-            }}>
-              {project.desc}
-            </p>
-            <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 14 }}>
-              {project.tags.slice(0, 4).map((t, i) => (
-                <span key={t} style={{
-                  fontSize: "0.64em", fontWeight: 500,
-                  color: `color-mix(in srgb, ${project.color} 80%, white)`,
-                  background: `${project.color}10`,
-                  padding: "3px 10px", borderRadius: 12,
-                }}>
-                  {t}
-                </span>
-              ))}
-              {project.tags.length > 4 && (
-                <span style={{ fontSize: "0.64em", color: "#555", padding: "3px 8px" }}>
-                  +{project.tags.length - 4}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Right: hero metric — poster style */}
-          <motion.div
-            variants={{ hover: { scale: 1.06 } }}
-            transition={{ duration: 0.3 }}
-            style={{
-              position: "relative", zIndex: 1,
-              flex: "0 0 auto",
-              textAlign: "right",
-            }}
-          >
-            <div style={{
-              fontSize: "clamp(3.5em, 8vw, 6em)",
-              fontWeight: 900,
-              letterSpacing: "-0.06em",
-              lineHeight: 0.85,
-              background: `linear-gradient(135deg, ${project.color}, ${(function() {
-                const p = project.color;
-                if (p === "#a78bfa") return "#c084fc";
-                if (p === "#f472b6") return "#f9a8d4";
-                if (p === "#34d399") return "#6ee7b7";
-                if (p === "#60a5fa") return "#93c5fd";
-                if (p === "#fbbf24") return "#fcd34d";
-                return "#c084fc";
-              })()})`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              filter: "drop-shadow(0 0 20px rgba(167,139,250,0.15))",
-            }}>
-              {hero.big}
-            </div>
-            <div style={{
-              fontSize: "0.72em", color: "#666", fontWeight: 500,
-              marginTop: 4, textTransform: "uppercase", letterSpacing: "0.06em",
-            }}>
-              {hero.lbl}
-            </div>
-          </motion.div>
-        </motion.div>
-      </BorderGlow>
-    </motion.div>
+      <span style={{ fontFamily: SERIF, fontSize: "0.85em", color: FAINT, fontStyle: "italic", flexShrink: 0, width: 40 }}>
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <span style={{ fontFamily: SERIF, fontSize: "clamp(1.3em, 3vw, 1.9em)", fontWeight: 700, letterSpacing: "-0.01em", flex: "1 1 auto", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        {project.name}
+      </span>
+      <span style={{ color: SUB, fontSize: "0.78em", flex: "0 1 34%", minWidth: 0, display: "none" }}>
+      </span>
+      <span style={{ color: FAINT, fontSize: "0.7em", textTransform: "uppercase", letterSpacing: "0.12em", flexShrink: 0, display: "none" }}>
+        {project.badge}
+      </span>
+      <span style={{ color: LIME, fontSize: "1.1em", flexShrink: 0, transform: "translateX(0)", transition: "transform 0.25s" }}
+        onMouseEnter={(e) => { e.currentTarget.style.transform = "translateX(6px)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.transform = "translateX(0)"; }}
+      >→</span>
+    </motion.button>
   );
 }
 
 // ====== DETAIL PAGE ======
 function DetailPage({ project, onBack }) {
-  const accentColors = ["#a78bfa", "#f472b6", "#34d399", "#60a5fa"];
-  const statusWidths = ["100%", "97%", "92%", "88%", "84%"];
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-      animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
-      exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-      transition={{ duration: 0.4 }}
-      style={{ maxWidth: 960, margin: "0 auto", padding: "120px 32px 80px" }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.35 }}
+      style={{ maxWidth: 860, margin: "0 auto", padding: "140px 32px 80px" }}
     >
       <button
         onClick={onBack}
         style={{
-          color: "#a78bfa", background: "none", border: "none",
-          fontSize: "0.86em", fontWeight: 500, cursor: "pointer",
-          marginBottom: 28, display: "inline-flex", alignItems: "center",
-          gap: 6, padding: 0,
+          color: SUB, background: "none", border: "none",
+          fontSize: "0.8em", letterSpacing: "0.08em", textTransform: "uppercase",
+          cursor: "pointer", marginBottom: 48, padding: 0,
         }}
       >
         ← 返回
       </button>
 
-      <div style={{ marginBottom: 32 }}>
-        <span style={{
-          fontSize: "0.68em", fontWeight: 600, color: "#a78bfa",
-          background: "rgba(167,139,250,0.12)", padding: "4px 12px",
-          borderRadius: 20, marginBottom: 16, display: "inline-block",
-        }}>{project.badge}</span>
-        <h1 style={{ fontSize: "2.6em", fontWeight: 900, color: "#fff", letterSpacing: "-0.05em", margin: "14px 0 10px" }}>{project.name}</h1>
-        <p style={{ color: "#888", fontSize: "1em", maxWidth: 600, lineHeight: 1.7 }}>{project.desc}</p>
+      <div style={{ marginBottom: 56 }}>
+        <div style={{ color: LIME, fontSize: "0.7em", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 20 }}>
+          {project.badge} · {String(PROJECTS.findIndex((p) => p.id === project.id) + 1).padStart(2, "0")}
+        </div>
+        <h1 style={{ fontFamily: SERIF, fontSize: "clamp(2.2em, 6vw, 3.6em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", lineHeight: 1.15, margin: "0 0 20px" }}>{project.name}</h1>
+        <p style={{ color: SUB, fontSize: "1em", maxWidth: 620, lineHeight: 1.8 }}>{project.desc}</p>
       </div>
 
-      {/* B — Metrics visualization */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16, marginBottom: 40 }}>
+      {/* Metrics */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 1, background: LINE, border: `1px solid ${LINE}`, marginBottom: 56 }}>
         {project.metrics.map((m, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             transition={{ delay: i * 0.08 }}
             viewport={{ once: true }}
-            style={{
-              background: "#0d0d14", border: "1px solid #1e1e30", borderRadius: 14,
-              padding: "24px 22px", position: "relative", overflow: "hidden",
-            }}
+            style={{ background: "#000", padding: "26px 24px" }}
           >
-            <div style={{
-              position: "absolute", top: 0, left: 0, right: 0, height: 2,
-              background: `linear-gradient(90deg, ${accentColors[i % 4]}, transparent)`,
-            }} />
-            <div style={{
-              fontSize: "clamp(2.2em, 5vw, 2.8em)", fontWeight: 900,
-              background: `linear-gradient(135deg, ${accentColors[i % 4]}, ${accentColors[(i + 1) % 4]})`,
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-              letterSpacing: "-0.04em", lineHeight: 1.1, marginBottom: 4,
-            }}>
-              {m.big}
-            </div>
-            <div style={{ fontSize: "0.8em", color: "#777", fontWeight: 500 }}>{m.lbl}</div>
-            <div style={{
-              marginTop: 12, height: 3, background: "#1a1a2a", borderRadius: 2, overflow: "hidden",
-            }}>
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: statusWidths[i % 5] }}
-                transition={{ duration: 1.2, delay: 0.2 + i * 0.1 }}
-                viewport={{ once: true }}
-                style={{
-                  height: "100%", borderRadius: 2,
-                  background: `linear-gradient(90deg, ${accentColors[i % 4]}, ${accentColors[(i + 1) % 4]})`,
-                }}
-              />
-            </div>
+            <div style={{ fontFamily: SERIF, fontSize: "clamp(1.8em, 4vw, 2.4em)", fontWeight: 700, color: INK, lineHeight: 1.1, marginBottom: 8 }}>{m.big}</div>
+            <div style={{ fontSize: "0.72em", color: FAINT, letterSpacing: "0.06em" }}>{m.lbl}</div>
           </motion.div>
         ))}
       </div>
 
-      {/* C — Pain vs Solution comparison */}
-      <div style={{ marginBottom: 36 }}>
-        <div style={{
-          fontSize: "0.74em", fontWeight: 700, textTransform: "uppercase",
-          letterSpacing: "0.1em", color: "#666", marginBottom: 16,
-        }}>
-          问题 → 方案
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            viewport={{ once: true }}
-            style={{
-              background: "rgba(244,114,182,0.04)", border: "1px solid rgba(244,114,182,0.15)",
-              borderRadius: 16, padding: 28, position: "relative", overflow: "hidden",
-            }}
-          >
-            <div style={{
-              position: "absolute", top: 0, left: 0, right: 0, height: 3,
-              background: "linear-gradient(90deg, #f472b6, rgba(244,114,182,0.2))",
-            }} />
-            <div style={{ fontSize: "0.72em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#f472b6", marginBottom: 14 }}>
-              ⚠ 痛点
-            </div>
-            <p style={{ color: "#999", fontSize: "0.88em", lineHeight: 1.8 }}>{project.pain}</p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            viewport={{ once: true }}
-            style={{
-              background: "rgba(52,211,153,0.04)", border: "1px solid rgba(52,211,153,0.15)",
-              borderRadius: 16, padding: 28, position: "relative", overflow: "hidden",
-            }}
-          >
-            <div style={{
-              position: "absolute", top: 0, left: 0, right: 0, height: 3,
-              background: "linear-gradient(90deg, #34d399, rgba(52,211,153,0.2))",
-            }} />
-            <div style={{ fontSize: "0.72em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#34d399", marginBottom: 14 }}>
-              ✓ 方案
-            </div>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {project.solution.map((s, i) => (
-                <li key={i} style={{
-                  color: "#aaa", fontSize: "0.84em", lineHeight: 1.8,
-                  paddingLeft: 20, position: "relative",
-                }}>
-                  <span style={{
-                    position: "absolute", left: 0, top: "0.55em",
-                    width: 6, height: 6, borderRadius: "50%",
-                    background: "#34d399", opacity: 0.6,
-                  }} />
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        </div>
+      {/* Pain vs Solution */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 48 }}>
+        <motion.div
+          initial={{ opacity: 0, x: -16 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          style={{ border: `1px solid ${LINE}`, borderRadius: 4, padding: 28 }}
+        >
+          <div style={{ fontSize: "0.68em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: LIME, marginBottom: 14 }}>痛点</div>
+          <p style={{ color: SUB, fontSize: "0.88em", lineHeight: 1.85 }}>{project.pain}</p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: 16 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.08 }}
+          viewport={{ once: true }}
+          style={{ border: `1px solid ${LINE}`, borderRadius: 4, padding: 28 }}
+        >
+          <div style={{ fontSize: "0.68em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: INK, marginBottom: 14 }}>方案</div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {project.solution.map((s, i) => (
+              <li key={i} style={{ color: "#cfcfcb", fontSize: "0.84em", lineHeight: 1.85, paddingLeft: 20, position: "relative", marginBottom: 6 }}>
+                <span style={{ position: "absolute", left: 0, top: "0.6em", width: 5, height: 5, borderRadius: "50%", background: LIME }} />
+                {s}
+              </li>
+            ))}
+          </ul>
+        </motion.div>
       </div>
 
-      {/* D — Key decision quote block */}
+      {/* Key decision */}
       {project.decision && (
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          style={{
-            marginBottom: 36, padding: "24px 28px",
-            background: "rgba(96,165,250,0.04)", borderRadius: 14,
-            borderLeft: "3px solid #60a5fa",
-          }}
+          style={{ marginBottom: 48, padding: "24px 28px", borderLeft: `3px solid ${LIME}`, background: "#0a0a0a" }}
         >
-          <div style={{
-            fontSize: "0.7em", fontWeight: 700, textTransform: "uppercase",
-            letterSpacing: "0.1em", color: "#60a5fa", marginBottom: 10,
-          }}>
-            关键决策
-          </div>
-          <p style={{
-            color: "#ccc", fontSize: "0.92em", lineHeight: 1.8,
-            fontStyle: "italic", margin: 0,
-          }}>
-            "{project.decision}"
-          </p>
+          <div style={{ fontSize: "0.66em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em", color: FAINT, marginBottom: 10 }}>关键决策</div>
+          <p style={{ fontFamily: SERIF, color: INK, fontSize: "0.98em", lineHeight: 1.8, fontStyle: "italic", margin: 0 }}>"{project.decision}"</p>
         </motion.div>
       )}
 
+      {/* Tech stack */}
       <div>
-        <div style={{
-          fontSize: "0.7em", fontWeight: 700, textTransform: "uppercase",
-          letterSpacing: "0.1em", color: "#666", marginBottom: 12,
-        }}>
-          技术栈
-        </div>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {project.tags.map((t, i) => (
-            <span key={t} style={{
-              fontSize: "0.7em", fontWeight: 500, letterSpacing: "0.02em",
-              color: accentColors[i % 4],
-              background: `${accentColors[i % 4]}12`,
-              padding: "5px 14px", borderRadius: 20,
-              border: `1px solid ${accentColors[i % 4]}20`,
-            }}>
+        <div style={{ fontSize: "0.66em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em", color: FAINT, marginBottom: 14 }}>技术栈</div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {project.tags.map((t) => (
+            <span key={t} style={{ fontSize: "0.72em", color: SUB, border: `1px solid ${LINE}`, borderRadius: 999, padding: "5px 14px", letterSpacing: "0.04em" }}>
               {t}
             </span>
           ))}
@@ -859,73 +446,52 @@ function DetailPage({ project, onBack }) {
 function SkillsPage() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-      animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
-      exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-      style={{ maxWidth: 960, margin: "0 auto", padding: "120px 32px 80px" }}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      style={{ maxWidth: 860, margin: "0 auto", padding: "140px 32px 80px" }}
     >
-      <div style={{ fontSize: "0.74em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#a78bfa", marginBottom: 10 }}>SKILLS</div>
-      <h2 style={{ fontSize: "2em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", marginBottom: 8 }}>技术能力分布</h2>
-      <p style={{ color: "#888", marginBottom: 40, fontSize: "0.94em" }}>每项能力均有生产环境项目验证。</p>
+      <div style={{ color: LIME, fontSize: "0.7em", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16 }}>Skills</div>
+      <h2 style={{ fontFamily: SERIF, fontSize: "clamp(1.8em, 4vw, 2.4em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", marginBottom: 12 }}>技术能力分布</h2>
+      <p style={{ color: SUB, marginBottom: 48, fontSize: "0.9em" }}>每项能力均有生产环境项目验证。</p>
 
       {SKILLS.map((s, i) => (
         <motion.div
           key={s.label}
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -16 }}
           whileInView={{ opacity: 1, x: 0 }}
-          transition={{ delay: i * 0.08 }}
+          transition={{ delay: i * 0.06 }}
           viewport={{ once: true }}
-          style={{ display: "flex", alignItems: "center", marginBottom: 16, gap: 16 }}
+          style={{ display: "flex", alignItems: "center", marginBottom: 18, gap: 20 }}
         >
-          <span style={{ width: 150, fontSize: "0.86em", fontWeight: 500, color: "#e4e4ee", flexShrink: 0 }}>{s.label}</span>
-          <div style={{ flex: 1, height: 5, background: "#1e1e30", borderRadius: 4, overflow: "hidden" }}>
+          <span style={{ width: 140, fontSize: "0.9em", fontWeight: 600, color: INK, flexShrink: 0 }}>{s.label}</span>
+          <div style={{ flex: 1, height: 3, background: "#1c1c1c" }}>
             <motion.div
               initial={{ width: 0 }}
               whileInView={{ width: s.w }}
-              transition={{ duration: 1.4, delay: 0.3 + i * 0.1 }}
+              transition={{ duration: 1.2, delay: 0.3 + i * 0.08 }}
               viewport={{ once: true }}
-              style={{ height: "100%", borderRadius: 4, background: `linear-gradient(90deg, ${s.colors[0]}, ${s.colors[1]})` }}
+              style={{ height: "100%", background: LIME }}
             />
           </div>
-          <span style={{ fontSize: "0.72em", color: "#888", width: 170, flexShrink: 0 }}>{s.note}</span>
+          <span style={{ fontSize: "0.72em", color: FAINT, width: 190, flexShrink: 0, textAlign: "right" }}>{s.note}</span>
         </motion.div>
       ))}
 
-      <h2 style={{ marginTop: 60, fontSize: "1.3em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em" }}>工程方法论</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 24 }}>
+      <h2 style={{ marginTop: 80, fontFamily: SERIF, fontSize: "1.6em", fontWeight: 800, color: INK, letterSpacing: "-0.01em" }}>工程方法论</h2>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: LINE, border: `1px solid ${LINE}`, marginTop: 32 }}>
         {DIFFS.map((d, i) => (
           <motion.div
             key={d.title}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
+            transition={{ delay: i * 0.06 }}
             viewport={{ once: true }}
-            whileHover={{ y: -3 }}
-            style={{
-              background: "#111118",
-              border: "1px solid #1e1e30",
-              borderRadius: 14,
-              padding: 24,
-              cursor: "default",
-              position: "relative",
-              overflow: "hidden",
-            }}
+            style={{ background: "#000", padding: 28 }}
           >
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 2,
-                background: `linear-gradient(90deg, ${d.color}, transparent)`,
-                opacity: 0,
-                transition: "opacity 0.35s",
-              }}
-            />
-            <div style={{ fontSize: "1.5em", marginBottom: 10 }}>{d.icon}</div>
-            <h3 style={{ fontSize: "0.95em", color: "#fff", marginBottom: 8 }}>{d.title}</h3>
-            <p style={{ fontSize: "0.82em", color: "#888", lineHeight: 1.65 }}>{d.text}</p>
+            <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "0.95em", color: LIME, marginBottom: 12 }}>{d.icon}</div>
+            <h3 style={{ fontSize: "1em", color: INK, marginBottom: 10, fontWeight: 700 }}>{d.title}</h3>
+            <p style={{ fontSize: "0.82em", color: SUB, lineHeight: 1.75 }}>{d.text}</p>
           </motion.div>
         ))}
       </div>
@@ -940,31 +506,23 @@ function ContactPage() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
-      style={{ maxWidth: 960, margin: "0 auto", padding: "120px 32px 80px", textAlign: "center" }}
+      style={{ maxWidth: 860, margin: "0 auto", padding: "140px 32px 80px" }}
     >
-      {/* About */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        style={{ maxWidth: 720, margin: "0 auto 48px", textAlign: "left" }}
-      >
-        <div style={{ fontSize: "0.74em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#a78bfa", marginBottom: 10 }}>ABOUT</div>
-        <h2 style={{ fontSize: "1.4em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", marginBottom: 20 }}>关于我</h2>
+      <div style={{ maxWidth: 720, margin: "0 auto 64px" }}>
+        <div style={{ color: LIME, fontSize: "0.7em", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16 }}>About</div>
+        <h2 style={{ fontFamily: SERIF, fontSize: "clamp(1.8em, 4vw, 2.4em)", fontWeight: 800, color: INK, marginBottom: 32 }}>关于我</h2>
 
-        <div style={{ background: "#111118", border: "1px solid #1e1e30", borderRadius: 16, padding: "32px 36px", position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #a78bfa, #f472b6, #60a5fa)" }} />
-
-          <div style={{ marginBottom: 28 }}>
-            <div style={{ fontSize: "clamp(1.8em, 4vw, 2.4em)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.1, background: "linear-gradient(135deg, #a78bfa, #f472b6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+        <div style={{ border: `1px solid ${LINE}`, borderRadius: 4, padding: "40px 36px", background: "#0a0a0a" }}>
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ fontFamily: SERIF, fontSize: "clamp(2.4em, 6vw, 3.4em)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
               王梓宇
             </div>
-            <div style={{ marginTop: 10, fontSize: "0.9em", color: "#ccc" }}>
-              AI 应用工程师 · <span style={{ color: "#a78bfa" }}>让大模型真的去干活,而不是只会聊天</span>
+            <div style={{ marginTop: 14, fontSize: "0.95em", color: SUB }}>
+              AI 应用工程师 · <span style={{ color: LIME }}>让大模型真的去干活，而不是只会聊天</span>
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12, marginBottom: 24 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 1, background: LINE, border: `1px solid ${LINE}`, marginBottom: 32 }}>
             {[
               { big: "40%", lbl: "高频问题响应提速" },
               { big: "7 万条", lbl: "强化训练数据" },
@@ -973,86 +531,64 @@ function ContactPage() {
             ].map((m, i) => (
               <motion.div
                 key={m.lbl}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.15 + i * 0.08 }}
-                style={{ background: "#0d0d14", border: "1px solid #1e1e30", borderRadius: 12, padding: "16px 14px", textAlign: "center" }}
+                transition={{ delay: 0.1 + i * 0.06 }}
+                style={{ background: "#0a0a0a", padding: "18px 14px" }}
               >
-                <div style={{ fontSize: "1.5em", fontWeight: 900, background: "linear-gradient(135deg, #a78bfa, #60a5fa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: "-0.03em", lineHeight: 1.15 }}>{m.big}</div>
-                <div style={{ marginTop: 4, fontSize: "0.72em", color: "#777" }}>{m.lbl}</div>
+                <div style={{ fontFamily: SERIF, fontSize: "1.5em", fontWeight: 700, color: INK, lineHeight: 1.1, marginBottom: 6 }}>{m.big}</div>
+                <div style={{ fontSize: "0.72em", color: FAINT }}>{m.lbl}</div>
               </motion.div>
             ))}
           </div>
 
-          <p style={{ margin: "0 0 20px", color: "#aaa", fontSize: "0.92em", lineHeight: 1.9 }}>
-            保险公司的客服机器人是我从研发一路带到上线的——检索、微调、强化训练都亲手跑过;现在这家公司的 AI 工具也是我一个个攒起来的:从装 GPU 工作站开始,8 个工具全部上线,同事天天在用,外箱尺寸钉钉秒查,报价单核对从一两个小时压到 1 分半。我的习惯:从业务痛点出发选技术,不追名词,每个项目算得清账,需求、开发、部署、教同事用一条龙走完。
+          <p style={{ margin: 0, color: "#cfcfcb", fontSize: "0.92em", lineHeight: 1.9 }}>
+            保险公司的客服机器人是我从研发一路带到上线的——检索、微调、强化训练都亲手跑过；现在这家公司的 AI 工具也是我一个个攒起来的：从装 GPU 工作站开始，8 个工具全部上线，同事天天在用，外箱尺寸钉钉秒查，报价单核对从一两个小时压到 1 分半。我的习惯：从业务痛点出发选技术，不追名词，每个项目算得清账，需求、开发、部署、教同事用一条龙走完。
           </p>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 28 }}>
             {["务实", "学得快", "交付完整"].map((k) => (
-              <span key={k} style={{ fontSize: "0.8em", fontWeight: 600, color: "#e4e4ee", background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.25)", padding: "6px 16px", borderRadius: 20 }}>{k}</span>
+              <span key={k} style={{ fontSize: "0.78em", fontWeight: 600, color: INK, border: `1px solid ${LINE}`, padding: "6px 18px", borderRadius: 999, letterSpacing: "0.04em" }}>{k}</span>
             ))}
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-        style={{
-          display: "inline-block",
-          maxWidth: 480,
-          width: "100%",
-        }}
+        transition={{ delay: 0.15 }}
+        style={{ maxWidth: 520, margin: "0 auto" }}
       >
-        <BorderGlow
-          borderRadius={18}
-          glowRadius={40}
-          backgroundColor="#111118"
-          animated
-          colors={["#c084fc", "#f472b6", "#38bdf8"]}
-        >
-          <div style={{ padding: 48 }}>
-            <h2 style={{ fontSize: "1.4em", color: "#fff", marginBottom: 8 }}>商务合作</h2>
-        <p style={{ color: "#888", marginBottom: 4, fontSize: "0.9em" }}>所有项目均可提供演示与技术支持</p>
-        <p style={{ fontSize: "0.84em", marginTop: 12, color: "#888" }}>欢迎沟通技术需求与合作意向</p>
-        <p style={{ fontSize: "0.8em", marginTop: 8, color: "#888" }}>远程 / 深圳</p>
-        <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
-          <a
-            href="mailto:1954798523@qq.com"
-            style={{ color: "#a78bfa", fontSize: "0.92em", fontWeight: 500, textDecoration: "none" }}
-          >
-            ✉ 1954798523@qq.com
-          </a>
-          <span style={{ color: "#888", fontSize: "0.92em" }}>💬 微信：18368283282</span>
-        </div>
-        <motion.a
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-          href="mailto:1954798523@qq.com"
-          style={{
-            marginTop: 24,
-            padding: "14px 36px",
-            borderRadius: 12,
-            fontSize: "0.9em",
-            fontWeight: 600,
-            cursor: "pointer",
-            border: "none",
-            color: "#fff",
-            background: "linear-gradient(135deg, #a78bfa, #f472b6)",
-            position: "relative",
-            overflow: "hidden",
-            display: "inline-block",
-            textDecoration: "none",
-          }}
-        >
-          <span style={{ position: "relative", zIndex: 1 }}>获取项目介绍</span>
-        </motion.a>
-        <p style={{ fontSize: "0.72em", color: "#888", marginTop: 18 }}>8 个 AI 项目 · 从需求到交付全流程覆盖</p>
+        <div style={{ border: `1px solid ${LINE}`, borderRadius: 4, padding: 48, textAlign: "center", background: "#0a0a0a" }}>
+          <div style={{ fontFamily: SERIF, fontSize: "1.5em", color: INK, marginBottom: 12, fontWeight: 700 }}>商务合作</div>
+          <p style={{ color: SUB, marginBottom: 4, fontSize: "0.9em" }}>所有项目均可提供演示与技术支持</p>
+          <p style={{ fontSize: "0.84em", marginTop: 12, color: SUB }}>欢迎沟通技术需求与合作意向</p>
+          <p style={{ fontSize: "0.78em", marginTop: 8, color: FAINT }}>远程 / 深圳</p>
+          <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
+            <a href="mailto:1954798523@qq.com" style={{ color: LIME, fontSize: "0.95em", fontWeight: 600, textDecoration: "none" }}>
+              ✉ 1954798523@qq.com
+            </a>
+            <span style={{ color: SUB, fontSize: "0.95em" }}>💬 微信：18368283282</span>
           </div>
-        </BorderGlow>
+          <motion.a
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+            href="mailto:1954798523@qq.com"
+            style={{
+              marginTop: 28, display: "inline-block",
+              padding: "14px 40px", borderRadius: 2,
+              fontSize: "0.9em", fontWeight: 700, letterSpacing: "0.06em",
+              cursor: "pointer", border: "none",
+              color: "#000", background: INK,
+              textDecoration: "none",
+            }}
+          >
+            获取项目介绍
+          </motion.a>
+          <p style={{ fontSize: "0.72em", color: FAINT, marginTop: 20 }}>8 个 AI 项目 · 从需求到交付全流程覆盖</p>
+        </div>
       </motion.div>
     </motion.div>
   );
@@ -1081,21 +617,11 @@ function AnimatedNumber({ end, suffix = "", lbl, delay = 0 }) {
   }, [end, delay]);
 
   return (
-    <div style={{
-      padding: "0 40px",
-      borderLeft: "1px solid #1e1e30",
-    }}>
-      <div style={{
-        fontSize: "clamp(2.4em, 5vw, 3.5em)",
-        fontWeight: 900,
-        color: "#fff",
-        letterSpacing: "-0.05em",
-        lineHeight: 1,
-        fontVariantNumeric: "tabular-nums",
-      }}>
+    <div>
+      <div style={{ fontFamily: SERIF, fontSize: "clamp(2.6em, 5vw, 3.6em)", fontWeight: 700, color: INK, letterSpacing: "-0.02em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
         {val}{suffix}
       </div>
-      <div style={{ fontSize: "0.78em", color: "#888", marginTop: 6 }}>{lbl}</div>
+      <div style={{ fontSize: "0.72em", color: FAINT, marginTop: 8, letterSpacing: "0.06em" }}>{lbl}</div>
     </div>
   );
 }
@@ -1158,75 +684,39 @@ export default function App() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#06060c", color: "#e4e4ee", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif", lineHeight: 1.7, overflowX: "hidden" }}>
-      <VideoBackground />
-      <Particles />
-      <CursorGlow />
+    <div style={{ minHeight: "100vh", background: "#000", color: INK, fontFamily: SANS, lineHeight: 1.7, overflowX: "hidden" }}>
       <ScrollProgress />
 
       {/* Nav */}
-      <nav
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          background: "rgba(6,6,12,0.85)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid #1e1e30",
-        }}
-      >
-        <div style={{ maxWidth: 1000, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 32px" }}>
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, background: "rgba(0,0,0,0.88)", backdropFilter: "blur(14px)", borderBottom: `1px solid ${LINE}` }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 32px" }}>
           <button
             onClick={() => { setDetailId(null); setPage("home"); }}
             style={{
-              fontWeight: 800,
-              fontSize: "1em",
-              background: "linear-gradient(135deg, #a78bfa, #f472b6)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              border: "none",
-              cursor: "pointer",
-              padding: 0,
+              background: "none", border: "none", cursor: "pointer", padding: 0,
+              fontSize: "0.72em", fontWeight: 700, letterSpacing: "0.28em",
+              color: INK, textTransform: "uppercase",
             }}
           >
-            Portfolio
+            王梓宇<span style={{ color: LIME }}>.</span>
           </button>
-          <div style={{ display: "flex", gap: 36, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
             {navItems.map((n) => (
               <button
                 key={n.id}
                 onClick={() => { setDetailId(null); setPage(n.id); }}
                 style={{
-                  color: page === n.id && !detailId ? "#fff" : "#888",
-                  background: "none",
-                  border: "none",
-                  fontSize: "0.84em",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  padding: "4px 0",
-                  position: "relative",
+                  color: page === n.id && !detailId ? INK : FAINT,
+                  background: "none", border: "none",
+                  fontSize: "0.72em", fontWeight: 600, letterSpacing: "0.2em",
+                  cursor: "pointer", padding: "4px 0",
+                  textTransform: "uppercase",
                   transition: "color 0.25s",
                 }}
-                onMouseEnter={(e) => (e.target.style.color = "#fff")}
-                onMouseLeave={(e) => (e.target.style.color = page === n.id && !detailId ? "#fff" : "#888")}
+                onMouseEnter={(e) => (e.target.style.color = INK)}
+                onMouseLeave={(e) => (e.target.style.color = page === n.id && !detailId ? INK : FAINT)}
               >
                 {n.label}
-                {(page === n.id || (page === "detail" && n.id === "projects")) && (
-                  <motion.div
-                    layoutId="navUnderline"
-                    style={{
-                      position: "absolute",
-                      bottom: -2,
-                      left: 0,
-                      right: 0,
-                      height: 2,
-                      borderRadius: 1,
-                      background: "linear-gradient(90deg, #a78bfa, #f472b6)",
-                    }}
-                  />
-                )}
               </button>
             ))}
           </div>
@@ -1237,147 +727,90 @@ export default function App() {
         {page === "home" && (
           <motion.div
             key="home"
-            initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
-            exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-            transition={{ duration: 0.4 }}
-            style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(160px, 22vh, 240px) 32px 80px", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35 }}
+            style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(140px, 20vh, 200px) 32px 80px", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }}
           >
-            <AuroraBackground />
+            <FloatingEmbers />
 
-            <div style={{ position: "relative", zIndex: 2, pointerEvents: "none" }}>
-              <RotatingRing />
-              <FloatingEmbers />
-            </div>
-
-            <div style={{ position: "relative", zIndex: 3 }}>
-              {/* Act 1 — subtitle */}
+            <div style={{ position: "relative", zIndex: 2 }}>
+              {/* Act 1 — name line */}
               <motion.div
-                initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
-                transition={{ delay: 0.3, duration: 0.7 }}
-                style={{
-                  fontSize: "clamp(0.72em, 1.5vw, 0.85em)",
-                  fontWeight: 400,
-                  letterSpacing: "0.18em",
-                  color: "#666",
-                  marginBottom: 24,
-                  textTransform: "uppercase",
-                }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                style={{ fontSize: "0.72em", letterSpacing: "0.3em", textTransform: "uppercase", color: FAINT, marginBottom: 40 }}
               >
-                AI 应用 · 工具开发 · 模型工程
+                王梓宇 — <span style={{ color: LIME }}>AI 应用工程师</span>
               </motion.div>
 
-              {/* Act 2 — role */}
+              {/* Act 2 — mega headline */}
               <motion.div
-                initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-                style={{
-                  fontSize: "clamp(1em, 2.5vw, 1.3em)",
-                  fontWeight: 300,
-                  color: "#ccc",
-                  letterSpacing: "0.04em",
-                  marginBottom: 32,
-                }}
+                initial={{ opacity: 0, y: 32 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                style={{ marginBottom: 40 }}
               >
-                AI 全栈开发
-              </motion.div>
-
-              {/* Act 3 — mega headline */}
-              <motion.div
-                initial={{ opacity: 0, y: 40, filter: "blur(12px)", scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0)", scale: 1 }}
-                transition={{ delay: 1.0, duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-                style={{ marginBottom: 32 }}
-              >
-                <h1
-                  style={{
-                    fontSize: "clamp(4em, 10vw, 8em)",
-                    fontWeight: 900,
-                    letterSpacing: "-0.07em",
-                    lineHeight: 0.9,
-                    margin: 0,
-                    background: "linear-gradient(135deg, #f472b6 0%, #a78bfa 35%, #60a5fa 70%)",
-                    backgroundSize: "300% auto",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    animation: "gradientShift 4s ease infinite",
-                    filter: "drop-shadow(0 0 30px rgba(167,139,250,0.3))",
-                  }}
-                >
+                <h1 style={{ fontFamily: SERIF, fontSize: "clamp(3.4em, 11vw, 8.2em)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.02, margin: 0 }}>
                   从需求
                   <br />
                   到交付
                 </h1>
+                <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(1em, 2vw, 1.3em)", color: FAINT, marginTop: 16 }}>
+                  From needs, to shipped —{" "}
+                  <span style={{ color: LIME }}>8 tools in production.</span>
+                </div>
               </motion.div>
 
-              {/* Act 4 — tagline */}
+              {/* Act 3 — tagline */}
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, duration: 0.7 }}
-                style={{
-                  fontSize: "clamp(0.9em, 1.5vw, 1.05em)",
-                  color: "#888",
-                  maxWidth: 520,
-                  lineHeight: 1.7,
-                  marginBottom: 48,
-                }}
+                transition={{ delay: 0.85, duration: 0.6 }}
+                style={{ fontSize: "clamp(0.92em, 1.4vw, 1.02em)", color: SUB, maxWidth: 560, lineHeight: 1.8, marginBottom: 56 }}
               >
                 不等资源 · 不限技术栈 · 快速交付。8 个 AI 项目落地使用，自建 GPU 算力平台。
               </motion.p>
 
-              {/* Act 5 — stats with count-up */}
+              {/* Act 4 — stats */}
               <motion.div
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.0, duration: 0.7 }}
-                style={{
-                  display: "flex",
-                  gap: "clamp(32px, 6vw, 72px)",
-                  flexWrap: "wrap",
-                  marginBottom: 64,
-                }}
+                transition={{ delay: 1.15, duration: 0.6 }}
+                style={{ display: "flex", gap: "clamp(48px, 8vw, 96px)", flexWrap: "wrap", marginBottom: 72 }}
               >
                 {[
                   { end: 8, suffix: "", lbl: "已交付项目" },
                   { end: 2, suffix: " 月", lbl: "平均交付周期" },
                 ].map((stat, i) => (
-                  <AnimatedNumber key={i} delay={2.2 + i * 0.2} {...stat} />
+                  <AnimatedNumber key={i} delay={1.3 + i * 0.2} {...stat} />
                 ))}
               </motion.div>
 
-              {/* Act 6 — scroll hint */}
+              {/* Act 5 — scroll hint */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 3.0, duration: 0.8 }}
-                style={{
-                  textAlign: "center",
-                  paddingBottom: 40,
-                }}
+                transition={{ delay: 1.9, duration: 0.7 }}
+                style={{ textAlign: "center", paddingBottom: 40 }}
               >
                 <motion.div
-                  animate={{ y: [0, 8, 0] }}
+                  animate={{ y: [0, 6, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  style={{
-                    fontSize: "0.7em",
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    color: "#555",
-                  }}
+                  style={{ fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase", color: FAINT }}
                 >
                   ↓ 向下探索
                 </motion.div>
               </motion.div>
 
               {/* Tech stack marquee */}
-              <div style={{ overflow: "hidden", maskImage: "linear-gradient(90deg, transparent, black 10%, black 90%, transparent)", marginBottom: 64 }}>
+              <div style={{ overflow: "hidden", maskImage: "linear-gradient(90deg, transparent, black 10%, black 90%, transparent)", marginBottom: 72 }}>
                 <motion.div
                   animate={{ x: ["0%", "-50%"] }}
                   transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                  style={{ display: "flex", gap: 32, width: "max-content" }}
+                  style={{ display: "flex", gap: 40, width: "max-content" }}
                 >
                   {[...Array(2)].map((_, round) =>
                     [
@@ -1390,11 +823,9 @@ export default function App() {
                       <span
                         key={`${round}-${i}`}
                         style={{
-                          fontSize: "0.9em",
-                          fontWeight: 600,
-                          color: i % 4 === 0 ? "#a78bfa" : i % 4 === 1 ? "#f472b6" : i % 4 === 2 ? "#60a5fa" : "#34d399",
+                          fontFamily: SERIF, fontStyle: "italic",
+                          fontSize: "1.05em", fontWeight: 600, color: i % 5 === 0 ? LIME : FAINT,
                           whiteSpace: "nowrap",
-                          opacity: 0.7,
                         }}
                       >
                         {tech}
@@ -1404,27 +835,21 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* GlassIcons - Project navigation */}
-              <div
-                style={{ marginTop: 60 }}
-                onClick={(e) => {
-                  const btn = e.target.closest(".icon-btn");
-                  if (!btn) return;
-                  const idx = Array.from(btn.parentElement.children).indexOf(btn);
-                  if (idx >= 0 && idx < PROJECTS.length) goDetail(PROJECTS[idx].id);
-                }}
+              {/* Projects list */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                style={{ marginTop: 40 }}
               >
-                <GlassIcons
-                  items={PROJECTS.map((p, i) => ({
-                    icon: "🎨🤖📋🌐💎🖼️📄🧠"[i] || "🔹",
-                    label: p.name,
-                    color: p.color,
-                  }))}
-                />
-              </div>
+                <div style={{ color: LIME, fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 8 }}>Selected Work</div>
+                {PROJECTS.map((p, i) => (
+                  <ProjectRow key={p.id} project={p} index={i} onClick={goDetail} />
+                ))}
+              </motion.div>
 
               {/* Capabilities highlight */}
-              <div style={{ marginTop: 80, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
+              <div style={{ marginTop: 88, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 1, background: LINE, border: `1px solid ${LINE}` }}>
                 {[
                   { t: "8 个项目", d: "全部闭环交付\n已投入实际使用" },
                   { t: "2 个月", d: "平均交付周期\n从需求确认到上线" },
@@ -1433,51 +858,35 @@ export default function App() {
                 ].map((item, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 14 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
+                    transition={{ delay: i * 0.06 }}
                     viewport={{ once: true }}
-                    style={{
-                      background: "linear-gradient(135deg, rgba(167,139,250,0.04), rgba(244,114,182,0.04))",
-                      border: "1px solid #1e1e30",
-                      borderRadius: 16,
-                      padding: "28px 24px",
-                      textAlign: "center",
-                    }}
+                    style={{ background: "#000", padding: "30px 26px" }}
                   >
-                    <div style={{ fontSize: "1.3em", fontWeight: 700, background: "linear-gradient(135deg, #a78bfa, #f472b6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 8 }}>
-                      {item.t}
-                    </div>
-                    <div style={{ color: "#888", fontSize: "0.84em", lineHeight: 1.7, whiteSpace: "pre-line" }}>{item.d}</div>
+                    <div style={{ fontFamily: SERIF, fontSize: "1.15em", fontWeight: 700, color: INK, marginBottom: 10 }}>{item.t}</div>
+                    <div style={{ color: SUB, fontSize: "0.82em", lineHeight: 1.75, whiteSpace: "pre-line" }}>{item.d}</div>
                   </motion.div>
                 ))}
               </div>
 
               {/* Differentiators */}
-              <h2 style={{ marginTop: 80, fontSize: "1.4em", fontWeight: 700, color: "#fff", textAlign: "center", letterSpacing: "-0.03em" }}>
-                <span style={{ background: "linear-gradient(135deg, #f472b6, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>全栈工程</span>核心能力
+              <h2 style={{ marginTop: 88, fontFamily: SERIF, fontSize: "clamp(1.6em, 3vw, 2.1em)", fontWeight: 800, color: INK, textAlign: "center", letterSpacing: "-0.01em" }}>
+                全栈工程核心能力
               </h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 28, maxWidth: 760, margin: "28px auto 0" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: LINE, border: `1px solid ${LINE}`, marginTop: 36, maxWidth: 760, margin: "36px auto 0" }}>
                 {DIFFS.map((d, i) => (
                   <motion.div
                     key={d.title}
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 14 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.08 }}
+                    transition={{ delay: i * 0.06 }}
                     viewport={{ once: true }}
-                    whileHover={{ y: -3, borderColor: "rgba(167,139,250,0.4)" }}
-                    style={{
-                      background: "#111118",
-                      border: "1px solid #1e1e30",
-                      borderRadius: 14,
-                      padding: 22,
-                      cursor: "default",
-                      transition: "all 0.3s",
-                    }}
+                    style={{ background: "#000", padding: 26 }}
                   >
-                    <div style={{ fontSize: "1.3em", marginBottom: 8 }}>{d.icon}</div>
-                    <h3 style={{ fontSize: "0.92em", color: "#fff", marginBottom: 6 }}>{d.title}</h3>
-                    <p style={{ fontSize: "0.8em", color: "#888", lineHeight: 1.6 }}>{d.text}</p>
+                    <div style={{ fontFamily: SERIF, fontStyle: "italic", color: LIME, fontSize: "0.9em", marginBottom: 10 }}>{d.icon}</div>
+                    <h3 style={{ fontSize: "0.95em", color: INK, marginBottom: 8, fontWeight: 700 }}>{d.title}</h3>
+                    <p style={{ fontSize: "0.8em", color: SUB, lineHeight: 1.7 }}>{d.text}</p>
                   </motion.div>
                 ))}
               </div>
@@ -1487,23 +896,19 @@ export default function App() {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                style={{ marginTop: 64, textAlign: "center" }}
+                style={{ marginTop: 72, textAlign: "center" }}
               >
                 <button
                   onClick={() => setPage("contact")}
                   style={{
-                    padding: "14px 36px",
-                    borderRadius: 12,
-                    fontSize: "0.95em",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    border: "none",
-                    color: "#fff",
-                    background: "linear-gradient(135deg, #a78bfa, #f472b6)",
-                    transition: "transform 0.2s, box-shadow 0.2s",
+                    padding: "14px 44px", borderRadius: 2,
+                    fontSize: "0.9em", fontWeight: 700, letterSpacing: "0.06em",
+                    cursor: "pointer", border: "none",
+                    color: "#000", background: INK,
+                    transition: "background 0.2s",
                   }}
-                  onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 8px 30px rgba(167,139,250,0.35)"; }}
-                  onMouseLeave={(e) => { e.target.style.transform = ""; e.target.style.boxShadow = ""; }}
+                  onMouseEnter={(e) => { e.target.style.background = LIME; }}
+                  onMouseLeave={(e) => { e.target.style.background = INK; }}
                 >
                   获取项目介绍
                 </button>
@@ -1515,19 +920,19 @@ export default function App() {
         {page === "projects" && (
           <motion.div
             key="projects"
-            initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0)" }}
-            exit={{ opacity: 0, y: -12, filter: "blur(4px)" }}
-            transition={{ duration: 0.4 }}
-            style={{ maxWidth: 1000, margin: "0 auto", padding: "120px 32px 80px" }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35 }}
+            style={{ maxWidth: 1000, margin: "0 auto", padding: "140px 32px 80px" }}
           >
-            <div style={{ fontSize: "0.74em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#a78bfa", marginBottom: 10 }}>PROJECTS</div>
-            <h2 style={{ fontSize: "2em", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", marginBottom: 8 }}>每个项目解决一个真实痛点</h2>
-            <p style={{ color: "#888", marginBottom: 40, fontSize: "0.94em" }}>没有玩具项目。每个都在生产环境有人用，每个都有量化结果。</p>
+            <div style={{ color: LIME, fontSize: "0.7em", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16 }}>Projects</div>
+            <h2 style={{ fontFamily: SERIF, fontSize: "clamp(1.8em, 4vw, 2.4em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", marginBottom: 12 }}>每个项目解决一个真实痛点</h2>
+            <p style={{ color: SUB, marginBottom: 48, fontSize: "0.9em" }}>没有玩具项目。每个都在生产环境有人用，每个都有量化结果。</p>
 
-            <div style={{ display: "grid", gap: 18 }}>
+            <div>
               {PROJECTS.map((p, i) => (
-                <ProjectCard key={p.id} project={p} index={i} onClick={goDetail} />
+                <ProjectRow key={p.id} project={p} index={i} onClick={goDetail} />
               ))}
             </div>
           </motion.div>
@@ -1542,23 +947,15 @@ export default function App() {
         {page === "contact" && <ContactPage key="contact" />}
       </AnimatePresence>
 
-      <footer style={{ borderTop: "1px solid #1e1e30", padding: "32px 24px", textAlign: "center", color: "#666", fontSize: "0.78em" }}>
+      <footer style={{ borderTop: `1px solid ${LINE}`, padding: "36px 24px", textAlign: "center", color: FAINT, fontSize: "0.76em", letterSpacing: "0.04em" }}>
         © 2026 王梓宇 · AI 应用工程师 ·{" "}
-        <a href="mailto:1954798523@qq.com" style={{ color: "#a78bfa", textDecoration: "none" }}>1954798523@qq.com</a>
+        <a href="mailto:1954798523@qq.com" style={{ color: LIME, textDecoration: "none" }}>1954798523@qq.com</a>
         {" · "}微信 18368283282
       </footer>
 
       <style>{`
-        @keyframes gradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
         button:focus { outline: none; }
-        button:focus-visible { outline: 2px solid #a78bfa; outline-offset: 2px; border-radius: 4px; }
+        button:focus-visible { outline: 2px solid ${LIME}; outline-offset: 2px; }
       `}</style>
     </div>
   );

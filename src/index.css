@@ -4,8 +4,8 @@
 
 body {
   margin: 0;
-  background: #06060c;
-  color: #e4e4ee;
+  background: #000;
+  color: #f4f4f2;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -13,4 +13,9 @@ body {
 
 #root {
   width: 100%;
+}
+
+::selection {
+  background: #d4ff00;
+  color: #000;
 }
