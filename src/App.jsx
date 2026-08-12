@@ -338,6 +338,98 @@ function ProjectRow({ project, index, onClick }) {
   );
 }
 
+// ====== PROJECT SHOWCASE (staggered split layout) ======
+const RATIOS = ["4/3", "1/1", "3/4", "4/3", "1/1", "3/4", "4/3", "1/1"];
+
+function ProjectShowcase({ project, index, onClick }) {
+  const reversed = index % 2 === 1;
+  const ratio = RATIOS[index % RATIOS.length];
+  const [hover, setHover] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55 }}
+      viewport={{ once: true, margin: "-60px" }}
+      onClick={() => onClick(project.id)}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{ cursor: "pointer", marginBottom: "clamp(64px, 10vw, 110px)" }}
+    >
+      <div
+        style={{
+          display: "flex",
+          gap: "clamp(24px, 4vw, 64px)",
+          flexDirection: reversed ? "row-reverse" : "row",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        {/* Text side */}
+        <div style={{ flex: "1 1 300px", maxWidth: 440, marginRight: reversed ? "auto" : 0, marginLeft: reversed ? 0 : "auto" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
+            <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "1em", color: LIME }}>
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span style={{ fontSize: "0.66em", letterSpacing: "0.22em", textTransform: "uppercase", color: FAINT }}>
+              {project.badge}
+            </span>
+          </div>
+          <h3 style={{ fontFamily: SERIF, fontSize: "clamp(1.6em, 3.5vw, 2.2em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", lineHeight: 1.15, margin: "0 0 14px" }}>
+            {project.name}
+          </h3>
+          <p style={{ color: SUB, fontSize: "0.9em", lineHeight: 1.8, margin: "0 0 20px" }}>{project.desc}</p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 22 }}>
+            {project.tags.slice(0, 4).map((t) => (
+              <span key={t} style={{ fontSize: "0.66em", color: SUB, border: `1px solid ${LINE}`, borderRadius: 999, padding: "4px 12px", letterSpacing: "0.04em" }}>
+                {t}
+              </span>
+            ))}
+          </div>
+          <div style={{ color: LIME, fontSize: "0.76em", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>
+            查看详情 <span style={{ display: "inline-block", transition: "transform 0.25s", transform: hover ? "translateX(6px)" : "translateX(0)" }}>→</span>
+          </div>
+        </div>
+
+        {/* Color block (image placeholder) */}
+        <motion.div
+          whileHover={{ scale: 1.015 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            flex: "1 1 340px",
+            aspectRatio: ratio,
+            borderRadius: 4,
+            background: `linear-gradient(160deg, ${project.color}30, ${project.color}12)`,
+            border: `1px solid ${project.color}45`,
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: SERIF, fontStyle: "italic",
+                fontSize: "clamp(5em, 14vw, 10em)", fontWeight: 800,
+                color: `${project.color}38`, letterSpacing: "-0.04em", lineHeight: 1,
+              }}
+            >
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+          <div style={{ position: "absolute", bottom: 16, right: 20, color: `${project.color}66`, fontSize: "0.66em", letterSpacing: "0.14em", textTransform: "uppercase" }}>
+            {project.metrics[0].big} — {project.metrics[0].lbl}
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ====== DETAIL PAGE ======
 function DetailPage({ project, onBack }) {
   return (
@@ -753,13 +845,13 @@ export default function App() {
                 transition={{ delay: 0.45, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                 style={{ marginBottom: 40 }}
               >
-                <h1 style={{ fontFamily: SERIF, fontSize: "clamp(3.4em, 11vw, 8.2em)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.02, margin: 0 }}>
-                  从需求
+                <h1 style={{ fontFamily: SERIF, fontSize: "clamp(3.4em, 11.5vw, 8.6em)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 0.98, margin: 0 }}>
+                  THEREFORE
                   <br />
-                  到交付
+                  I&nbsp;CREATE<span style={{ color: LIME }}>;</span>
                 </h1>
-                <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(1em, 2vw, 1.3em)", color: FAINT, marginTop: 16 }}>
-                  From needs, to shipped —{" "}
+                <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(1em, 2vw, 1.3em)", color: FAINT, marginTop: 20 }}>
+                  从需求，到交付 —{" "}
                   <span style={{ color: LIME }}>8 tools in production.</span>
                 </div>
               </motion.div>
@@ -835,18 +927,38 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* Projects list */}
+              {/* Manifesto repeat */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                style={{ marginTop: 40 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true, margin: "-80px" }}
+                style={{ margin: "96px 0 72px", textAlign: "center" }}
               >
-                <div style={{ color: LIME, fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 8 }}>Selected Work</div>
-                {PROJECTS.map((p, i) => (
-                  <ProjectRow key={p.id} project={p} index={i} onClick={goDetail} />
-                ))}
+                <div style={{ fontFamily: SERIF, fontSize: "clamp(2em, 6vw, 4em)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.05, color: INK }}>
+                  THEREFORE
+                  <br />
+                  I&nbsp;CREATE<span style={{ color: LIME }}>;</span>
+                </div>
               </motion.div>
+
+              {/* Projects showcase */}
+              <div style={{ marginTop: 40 }}>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 48 }}>
+                  <span style={{ color: LIME, fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase" }}>Selected Work</span>
+                  <button
+                    onClick={() => setPage("projects")}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: FAINT, fontSize: "0.72em", letterSpacing: "0.12em", textTransform: "uppercase", padding: 0 }}
+                    onMouseEnter={(e) => (e.target.style.color = INK)}
+                    onMouseLeave={(e) => (e.target.style.color = FAINT)}
+                  >
+                    全部项目 →
+                  </button>
+                </div>
+                {PROJECTS.map((p, i) => (
+                  <ProjectShowcase key={p.id} project={p} index={i} onClick={goDetail} />
+                ))}
+              </div>
 
               {/* Capabilities highlight */}
               <div style={{ marginTop: 88, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 1, background: LINE, border: `1px solid ${LINE}` }}>
