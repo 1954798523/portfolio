@@ -363,6 +363,66 @@ function ProjectRow({ project, index, onClick }) {
   );
 }
 
+// ====== DIFF STATEMENT (staggered manifesto rows) ======
+function DiffStatement({ d, index }) {
+  const offset = index % 2 === 1;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.65, ease: EASE }}
+      viewport={{ once: true, margin: "-60px" }}
+      style={{
+        display: "flex",
+        gap: "clamp(20px, 4vw, 56px)",
+        alignItems: "flex-start",
+        padding: "clamp(32px, 5vw, 56px) 8px",
+        borderBottom: `1px solid ${LINE}`,
+        marginLeft: offset ? "clamp(0px, 8vw, 96px)" : 0,
+        marginRight: offset ? 0 : "clamp(0px, 8vw, 96px)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+      onMouseEnter={(e) => { e.currentTarget.querySelector(".ds-num").style.color = LIME; }}
+      onMouseLeave={(e) => { e.currentTarget.querySelector(".ds-num").style.color = ""; }}
+    >
+      {/* Giant serif number */}
+      <span
+        className="ds-num"
+        style={{
+          fontFamily: SERIF, fontStyle: "italic",
+          fontSize: "clamp(2.6em, 6vw, 4.4em)", fontWeight: 800,
+          color: INK, lineHeight: 1, flexShrink: 0,
+          transition: "color 0.3s",
+        }}
+      >
+        {d.icon}
+      </span>
+
+      <div style={{ position: "relative", zIndex: 1, flex: 1, maxWidth: 560 }}>
+        <h3 style={{ fontFamily: SERIF, fontSize: "clamp(1.4em, 3.2vw, 2em)", fontWeight: 800, color: INK, letterSpacing: "-0.01em", margin: "6px 0 12px" }}>
+          {d.title}
+        </h3>
+        <p style={{ color: SUB, fontSize: "0.86em", lineHeight: 1.85, margin: 0 }}>{d.text}</p>
+      </div>
+
+      {/* Watermark */}
+      <span
+        aria-hidden
+        style={{
+          position: "absolute", right: offset ? 0 : -10, bottom: -18,
+          fontFamily: SERIF, fontStyle: "italic",
+          fontSize: "clamp(6em, 16vw, 13em)", fontWeight: 800,
+          color: "rgba(244,244,242,0.045)", lineHeight: 1,
+          letterSpacing: "-0.04em", pointerEvents: "none",
+        }}
+      >
+        {d.icon}
+      </span>
+    </motion.div>
+  );
+}
+
 // ====== PROJECT SHOWCASE (staggered split layout) ======
 const RATIOS = ["4/3", "1/1", "3/4", "4/3", "1/1", "3/4", "4/3", "1/1"];
 
@@ -609,22 +669,14 @@ function SkillsPage() {
         </motion.div>
       ))}
 
-      <h2 style={{ marginTop: 80, fontFamily: SERIF, fontSize: "1.6em", fontWeight: 800, color: INK, letterSpacing: "-0.01em" }}>工程方法论</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: LINE, border: `1px solid ${LINE}`, marginTop: 32 }}>
-        {DIFFS.map((d, i) => (
-          <motion.div
-            key={d.title}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06 }}
-            viewport={{ once: true }}
-            style={{ background: "#000", padding: 28 }}
-          >
-            <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "0.95em", color: LIME, marginBottom: 12 }}>{d.icon}</div>
-            <h3 style={{ fontSize: "1em", color: INK, marginBottom: 10, fontWeight: 700 }}>{d.title}</h3>
-            <p style={{ fontSize: "0.82em", color: SUB, lineHeight: 1.75 }}>{d.text}</p>
-          </motion.div>
-        ))}
+      <div style={{ marginTop: 80 }}>
+        <div style={{ color: LIME, fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 10 }}>Method</div>
+        <h2 style={{ fontFamily: SERIF, fontSize: "1.8em", fontWeight: 800, color: INK, letterSpacing: "-0.01em", marginBottom: 24 }}>工程方法论</h2>
+        <div>
+          {DIFFS.map((d, i) => (
+            <DiffStatement key={d.title} d={d} index={i} />
+          ))}
+        </div>
       </div>
     </motion.div>
   );
@@ -1044,24 +1096,16 @@ export default function App() {
               </div>
 
               {/* Differentiators */}
-              <h2 style={{ marginTop: 88, fontFamily: SERIF, fontSize: "clamp(1.6em, 3vw, 2.1em)", fontWeight: 800, color: INK, textAlign: "center", letterSpacing: "-0.01em" }}>
-                全栈工程核心能力
-              </h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: LINE, border: `1px solid ${LINE}`, marginTop: 36, maxWidth: 760, margin: "36px auto 0" }}>
-                {DIFFS.map((d, i) => (
-                  <motion.div
-                    key={d.title}
-                    initial={{ opacity: 0, y: 14 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    viewport={{ once: true }}
-                    style={{ background: "#000", padding: 26 }}
-                  >
-                    <div style={{ fontFamily: SERIF, fontStyle: "italic", color: LIME, fontSize: "0.9em", marginBottom: 10 }}>{d.icon}</div>
-                    <h3 style={{ fontSize: "0.95em", color: INK, marginBottom: 8, fontWeight: 700 }}>{d.title}</h3>
-                    <p style={{ fontSize: "0.8em", color: SUB, lineHeight: 1.7 }}>{d.text}</p>
-                  </motion.div>
-                ))}
+              <div style={{ marginTop: 96, maxWidth: 880, marginLeft: "auto", marginRight: "auto" }}>
+                <div style={{ color: LIME, fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 10 }}>Core Strengths</div>
+                <h2 style={{ fontFamily: SERIF, fontSize: "clamp(1.8em, 3.5vw, 2.4em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", marginBottom: 24 }}>
+                  全栈工程核心能力
+                </h2>
+                <div>
+                  {DIFFS.map((d, i) => (
+                    <DiffStatement key={d.title} d={d} index={i} />
+                  ))}
+                </div>
               </div>
 
               {/* Bottom CTA */}
