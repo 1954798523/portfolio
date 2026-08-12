@@ -198,7 +198,7 @@ const DIFFS = [
   {
     icon: "⚡",
     title: "快速验证迭代",
-    text: "发现问题当日出原型，用实际反馈驱动迭代，而非文档驱动开发。平均 2 天交付可用工具。",
+    text: "发现问题当日出原型，用实际反馈驱动迭代，而非文档驱动开发。原型平均 2 天，完整交付约 2 个月。",
     color: "#fbbf24",
   },
 ];
@@ -1019,9 +1019,19 @@ function ContactPage() {
         <p style={{ color: "#888", marginBottom: 4, fontSize: "0.9em" }}>所有项目均可提供演示与技术支持</p>
         <p style={{ fontSize: "0.84em", marginTop: 12, color: "#888" }}>欢迎沟通技术需求与合作意向</p>
         <p style={{ fontSize: "0.8em", marginTop: 8, color: "#888" }}>远程 / 深圳</p>
-        <motion.button
+        <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+          <a
+            href="mailto:1954798523@qq.com"
+            style={{ color: "#a78bfa", fontSize: "0.92em", fontWeight: 500, textDecoration: "none" }}
+          >
+            ✉ 1954798523@qq.com
+          </a>
+          <span style={{ color: "#888", fontSize: "0.92em" }}>💬 微信：18368283282</span>
+        </div>
+        <motion.a
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.97 }}
+          href="mailto:1954798523@qq.com"
           style={{
             marginTop: 24,
             padding: "14px 36px",
@@ -1034,10 +1044,12 @@ function ContactPage() {
             background: "linear-gradient(135deg, #a78bfa, #f472b6)",
             position: "relative",
             overflow: "hidden",
+            display: "inline-block",
+            textDecoration: "none",
           }}
         >
           <span style={{ position: "relative", zIndex: 1 }}>获取项目介绍</span>
-        </motion.button>
+        </motion.a>
         <p style={{ fontSize: "0.72em", color: "#888", marginTop: 18 }}>8 个 AI 项目 · 从需求到交付全流程覆盖</p>
           </div>
         </BorderGlow>
@@ -1092,17 +1104,19 @@ function AnimatedNumber({ end, suffix = "", lbl, delay = 0 }) {
 export default function App() {
   const [page, setPage] = useState("home");
   const [detailId, setDetailId] = useState(null);
+  const [fromPage, setFromPage] = useState("projects");
   const detailProject = detailId ? PROJECTS.find((p) => p.id === detailId) : null;
 
   const goDetail = useCallback((id) => {
+    setFromPage(page);
     setDetailId(id);
     setPage("detail");
-  }, []);
+  }, [page]);
 
   const goBack = useCallback(() => {
     setDetailId(null);
-    setPage("projects");
-  }, []);
+    setPage(fromPage);
+  }, [fromPage]);
 
   const navItems = [
     { id: "projects", label: "项目" },
@@ -1369,7 +1383,7 @@ export default function App() {
               >
                 <GlassIcons
                   items={PROJECTS.map((p, i) => ({
-                    icon: "🎨🤖📋🌐💎📄🖼️🔵"[i] || "🔹",
+                    icon: "🎨🤖📋🌐💎🖼️📄🧠"[i] || "🔹",
                     label: p.name,
                     color: p.color,
                   }))}
