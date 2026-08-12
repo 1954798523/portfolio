@@ -386,34 +386,36 @@ function DiffStatement({ d, index }) {
       onMouseEnter={(e) => { e.currentTarget.querySelector(".ds-num").style.color = LIME; }}
       onMouseLeave={(e) => { e.currentTarget.querySelector(".ds-num").style.color = ""; }}
     >
-      {/* Giant serif number */}
+      {/* Giant serif number, bleeding into the title */}
       <span
         className="ds-num"
         style={{
           fontFamily: SERIF, fontStyle: "italic",
-          fontSize: "clamp(2.6em, 6vw, 4.4em)", fontWeight: 800,
+          fontSize: "clamp(3em, 7vw, 5em)", fontWeight: 800,
           color: INK, lineHeight: 1, flexShrink: 0,
+          position: "relative", zIndex: 0,
+          marginRight: -14,
           transition: "color 0.3s",
         }}
       >
         {d.icon}
       </span>
 
-      <div style={{ position: "relative", zIndex: 1, flex: 1, maxWidth: 560 }}>
+      <div style={{ position: "relative", zIndex: 2, flex: 1, maxWidth: 560 }}>
         <h3 style={{ fontFamily: SERIF, fontSize: "clamp(1.4em, 3.2vw, 2em)", fontWeight: 800, color: INK, letterSpacing: "-0.01em", margin: "6px 0 12px" }}>
           {d.title}
         </h3>
         <p style={{ color: SUB, fontSize: "0.86em", lineHeight: 1.85, margin: 0 }}>{d.text}</p>
       </div>
 
-      {/* Watermark */}
+      {/* Watermark bleeding out of the row */}
       <span
         aria-hidden
         style={{
-          position: "absolute", right: offset ? 0 : -10, bottom: -18,
+          position: "absolute", right: offset ? -24 : -48, bottom: -42,
           fontFamily: SERIF, fontStyle: "italic",
-          fontSize: "clamp(6em, 16vw, 13em)", fontWeight: 800,
-          color: "rgba(244,244,242,0.045)", lineHeight: 1,
+          fontSize: "clamp(8em, 20vw, 15em)", fontWeight: 800,
+          color: "rgba(244,244,242,0.05)", lineHeight: 1,
           letterSpacing: "-0.04em", pointerEvents: "none",
         }}
       >
@@ -922,6 +924,20 @@ export default function App() {
           >
             <FloatingEmbers />
 
+            <span
+              aria-hidden
+              style={{
+                position: "absolute", right: 24, top: "50%",
+                transform: "translateY(-50%)",
+                writingMode: "vertical-rl",
+                fontSize: "0.64em", letterSpacing: "0.5em",
+                color: FAINT, textTransform: "uppercase",
+                opacity: 0.7, pointerEvents: "none", zIndex: 1,
+              }}
+            >
+              王梓宇 · AI 应用工程师
+            </span>
+
             <div style={{ position: "relative", zIndex: 2 }}>
               {/* Act 1-4 — parallax group */}
               <motion.div style={{ y: heroShift, opacity: heroFade }}>
@@ -1097,10 +1113,28 @@ export default function App() {
 
               {/* Differentiators */}
               <div style={{ marginTop: 96, maxWidth: 880, marginLeft: "auto", marginRight: "auto" }}>
-                <div style={{ color: LIME, fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase", marginBottom: 10 }}>Core Strengths</div>
-                <h2 style={{ fontFamily: SERIF, fontSize: "clamp(1.8em, 3.5vw, 2.4em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", marginBottom: 24 }}>
-                  全栈工程核心能力
-                </h2>
+                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 10 }}>
+                  <span style={{ width: 44, height: 2, background: LIME, display: "inline-block" }} />
+                  <span style={{ color: LIME, fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase" }}>Core Strengths</span>
+                </div>
+                <div style={{ position: "relative", overflow: "hidden", padding: "8px 0 24px" }}>
+                  <span
+                    aria-hidden
+                    style={{
+                      position: "absolute", right: -16, top: -34,
+                      fontFamily: SERIF, fontStyle: "italic",
+                      fontSize: "clamp(5em, 13vw, 9.5em)", fontWeight: 800,
+                      color: "rgba(244,244,242,0.05)", letterSpacing: "-0.04em",
+                      lineHeight: 1, pointerEvents: "none", whiteSpace: "nowrap",
+                    }}
+                  >
+                    Full-Stack
+                  </span>
+                  <h2 style={{ position: "relative", zIndex: 1, fontFamily: SERIF, fontSize: "clamp(1.9em, 3.6vw, 2.6em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", margin: 0 }}>
+                    全栈工程核心能力
+                    <span style={{ fontStyle: "italic", fontWeight: 400, fontSize: "0.5em", color: FAINT, marginLeft: "0.6em" }}>Full-Stack Engineering</span>
+                  </h2>
+                </div>
                 <div>
                   {DIFFS.map((d, i) => (
                     <DiffStatement key={d.title} d={d} index={i} />
