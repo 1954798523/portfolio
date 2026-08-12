@@ -1100,12 +1100,45 @@ function AnimatedNumber({ end, suffix = "", lbl, delay = 0 }) {
   );
 }
 
+// ====== HASH ROUTING ======
+function parseHash() {
+  const h = window.location.hash;
+  if (!h || h === "#" || h === "#/") return { page: "home", detailId: null };
+  if (h.startsWith("#/project/")) {
+    const id = h.slice("#/project/".length);
+    if (PROJECTS.some((p) => p.id === id)) return { page: "detail", detailId: id };
+    return { page: "projects", detailId: null };
+  }
+  const map = { "#/projects": "projects", "#/skills": "skills", "#/contact": "contact" };
+  return { page: map[h] || "home", detailId: null };
+}
+
 // ====== MAIN APP ======
 export default function App() {
-  const [page, setPage] = useState("home");
-  const [detailId, setDetailId] = useState(null);
+  const initial = parseHash();
+  const [page, setPage] = useState(initial.page);
+  const [detailId, setDetailId] = useState(initial.detailId);
   const [fromPage, setFromPage] = useState("projects");
   const detailProject = detailId ? PROJECTS.find((p) => p.id === detailId) : null;
+
+  useEffect(() => {
+    const target = detailId ? `#/project/${detailId}` : page === "home" ? "#/" : `#/${page}`;
+    if (window.location.hash !== target) history.replaceState(null, "", target);
+  }, [page, detailId]);
+
+  useEffect(() => {
+    const onHash = () => {
+      const s = parseHash();
+      setPage(s.page);
+      setDetailId(s.detailId);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [page]);
 
   const goDetail = useCallback((id) => {
     setFromPage(page);
@@ -1508,6 +1541,12 @@ export default function App() {
 
         {page === "contact" && <ContactPage key="contact" />}
       </AnimatePresence>
+
+      <footer style={{ borderTop: "1px solid #1e1e30", padding: "32px 24px", textAlign: "center", color: "#666", fontSize: "0.78em" }}>
+        © 2026 王梓宇 · AI 应用工程师 ·{" "}
+        <a href="mailto:1954798523@qq.com" style={{ color: "#a78bfa", textDecoration: "none" }}>1954798523@qq.com</a>
+        {" · "}微信 18368283282
+      </footer>
 
       <style>{`
         @keyframes gradientShift {
