@@ -36,8 +36,8 @@ const PROJECTS = [
     id: "carton",
     name: "外箱尺寸查询系统",
     badge: "LLM Agent",
-    desc: "将散落在 101 个 Excel 中的产品外箱数据提取、去重整合为知识库，通过 LLM Agent 实现自然语言查询，员工在钉钉私聊机器人即可秒查尺寸。",
-    tags: ["Hermes", "DeepSeek", "DingTalk Bot", "Obsidian"],
+    desc: "将散落在 101 个 Excel 中的产品外箱数据提取、去重整合为知识库，基于 RAG 架构通过 LLM Agent 实现自然语言查询，员工在钉钉私聊机器人即可秒查尺寸。",
+    tags: ["Hermes", "RAG", "DeepSeek", "DingTalk Bot", "Obsidian"],
     color: "#f472b6",
     metrics: [
       { big: "353 条", lbl: "产品外箱数据" },
@@ -908,7 +908,7 @@ export default function App() {
                     [
                       "ComfyUI", "FLUX.1-dev", "Real-ESRGAN", "Potrace", "Streamlit",
                       "DeepSeek API", "Qwen-VL", "EasyOCR", "PyInstaller", "OneTrainer",
-                      "Hermes Gateway", "K-Means", "SVG", "Waitress", "Obsidian",
+                      "Hermes Gateway", "RAG", "K-Means", "SVG", "Waitress", "Obsidian",
                       "HuggingFace", "SDXL", "LoRA", "tkinter", "RMBG-2.0",
                       "PIL/Pillow", "NumPy", "LANCZOS",
                     ].map((tech, i) => (
