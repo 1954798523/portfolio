@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+
+const EASE = [0.16, 1, 0.3, 1];
 
 const SERIF = "'Playfair Display','Noto Serif SC','Source Han Serif SC','Songti SC','SimSun',serif";
 const SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif";
@@ -364,6 +366,19 @@ function ProjectRow({ project, index, onClick }) {
 // ====== PROJECT SHOWCASE (staggered split layout) ======
 const RATIOS = ["4/3", "1/1", "3/4", "4/3", "1/1", "3/4", "4/3", "1/1"];
 
+const showcaseContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12 } },
+};
+const textSlide = (reversed) => ({
+  hidden: { opacity: 0, x: reversed ? 48 : -48 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.75, ease: EASE } },
+});
+const blockSlide = (reversed) => ({
+  hidden: { opacity: 0, x: reversed ? -48 : 48, scale: 0.97 },
+  show: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.85, ease: EASE } },
+});
+
 function ProjectShowcase({ project, index, onClick }) {
   const reversed = index % 2 === 1;
   const ratio = RATIOS[index % RATIOS.length];
@@ -371,10 +386,10 @@ function ProjectShowcase({ project, index, onClick }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.55 }}
-      viewport={{ once: true, margin: "-60px" }}
+      variants={showcaseContainer}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-80px" }}
       onClick={() => onClick(project.id)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -390,7 +405,7 @@ function ProjectShowcase({ project, index, onClick }) {
         }}
       >
         {/* Text side */}
-        <div style={{ flex: "1 1 300px", maxWidth: 440, marginRight: reversed ? "auto" : 0, marginLeft: reversed ? 0 : "auto" }}>
+        <motion.div variants={textSlide(reversed)} style={{ flex: "1 1 300px", maxWidth: 440, marginRight: reversed ? "auto" : 0, marginLeft: reversed ? 0 : "auto" }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
             <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "1em", color: LIME }}>
               {String(index + 1).padStart(2, "0")}
@@ -413,12 +428,11 @@ function ProjectShowcase({ project, index, onClick }) {
           <div style={{ color: LIME, fontSize: "0.76em", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 600 }}>
             查看详情 <span style={{ display: "inline-block", transition: "transform 0.25s", transform: hover ? "translateX(6px)" : "translateX(0)" }}>→</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Color block (image placeholder) */}
         <motion.div
-          whileHover={{ scale: 1.015 }}
-          transition={{ duration: 0.3 }}
+          variants={blockSlide(reversed)}
           style={{
             flex: "1 1 340px",
             aspectRatio: ratio,
@@ -429,7 +443,9 @@ function ProjectShowcase({ project, index, onClick }) {
             overflow: "hidden",
           }}
         >
-          <div
+          <motion.div
+            animate={hover ? { scale: 1.06 } : { scale: 1 }}
+            transition={{ duration: 0.6, ease: EASE }}
             style={{
               position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
             }}
@@ -443,7 +459,7 @@ function ProjectShowcase({ project, index, onClick }) {
             >
               {String(index + 1).padStart(2, "0")}
             </span>
-          </div>
+          </motion.div>
           <div style={{ position: "absolute", bottom: 16, right: 20, color: `${project.color}66`, fontSize: "0.66em", letterSpacing: "0.14em", textTransform: "uppercase" }}>
             {project.metrics[0].big} — {project.metrics[0].lbl}
           </div>
@@ -781,6 +797,10 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [page]);
 
+  const { scrollY } = useScroll();
+  const heroShift = useTransform(scrollY, [0, 480], [0, -90]);
+  const heroFade = useTransform(scrollY, [0, 420], [1, 0]);
+
   const goDetail = useCallback((id) => {
     setFromPage(page);
     setDetailId(id);
@@ -851,57 +871,75 @@ export default function App() {
             <FloatingEmbers />
 
             <div style={{ position: "relative", zIndex: 2 }}>
-              {/* Act 1 — name line */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                style={{ fontSize: "0.72em", letterSpacing: "0.3em", textTransform: "uppercase", color: FAINT, marginBottom: 40 }}
-              >
-                王梓宇 — <span style={{ color: LIME }}>AI 应用工程师</span>
-              </motion.div>
+              {/* Act 1-4 — parallax group */}
+              <motion.div style={{ y: heroShift, opacity: heroFade }}>
+                {/* Act 1 — name line */}
+                <motion.div
+                  initial={{ opacity: 0, filter: "blur(8px)" }}
+                  animate={{ opacity: 1, filter: "blur(0px)" }}
+                  transition={{ delay: 0.2, duration: 0.9, ease: EASE }}
+                  style={{ fontSize: "0.72em", letterSpacing: "0.3em", textTransform: "uppercase", color: FAINT, marginBottom: 44 }}
+                >
+                  王梓宇 — <span style={{ color: LIME }}>AI 应用工程师</span>
+                </motion.div>
 
-              {/* Act 2 — mega headline */}
-              <motion.div
-                initial={{ opacity: 0, y: 32 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                style={{ marginBottom: 40 }}
-              >
-                <h1 style={{ fontFamily: SERIF, fontSize: "clamp(3.4em, 11.5vw, 8.6em)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 0.98, margin: 0 }}>
-                  THEREFORE
-                  <br />
-                  I&nbsp;CREATE<span style={{ color: LIME }}>;</span>
-                </h1>
-                <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(1em, 2vw, 1.3em)", color: FAINT, marginTop: 20 }}>
-                  从需求，到交付 —{" "}
-                  <span style={{ color: LIME }}>9 tools in production.</span>
+                {/* Act 2 — mega headline, mask reveal line by line */}
+                <div style={{ marginBottom: 40 }}>
+                  <div style={{ overflow: "hidden" }}>
+                    <motion.h1
+                      initial={{ y: "108%" }}
+                      animate={{ y: 0 }}
+                      transition={{ delay: 0.4, duration: 1.0, ease: EASE }}
+                      style={{ fontFamily: SERIF, fontSize: "clamp(3.4em, 11.5vw, 8.6em)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 0.98, margin: 0 }}
+                    >
+                      THEREFORE
+                    </motion.h1>
+                  </div>
+                  <div style={{ overflow: "hidden" }}>
+                    <motion.h1
+                      initial={{ y: "108%" }}
+                      animate={{ y: 0 }}
+                      transition={{ delay: 0.58, duration: 1.0, ease: EASE }}
+                      style={{ fontFamily: SERIF, fontSize: "clamp(3.4em, 11.5vw, 8.6em)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.04, margin: 0 }}
+                    >
+                      I&nbsp;CREATE<span style={{ color: LIME }}>;</span>
+                    </motion.h1>
+                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, filter: "blur(8px)" }}
+                    animate={{ opacity: 1, filter: "blur(0px)" }}
+                    transition={{ delay: 0.9, duration: 0.8, ease: EASE }}
+                    style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(1em, 2vw, 1.3em)", color: FAINT, marginTop: 20 }}
+                  >
+                    从需求，到交付 —{" "}
+                    <span style={{ color: LIME }}>9 tools in production.</span>
+                  </motion.div>
                 </div>
-              </motion.div>
 
-              {/* Act 3 — tagline */}
-              <motion.p
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.85, duration: 0.6 }}
-                style={{ fontSize: "clamp(0.92em, 1.4vw, 1.02em)", color: SUB, maxWidth: 560, lineHeight: 1.8, marginBottom: 56 }}
-              >
-                不等资源 · 不限技术栈 · 快速交付。9 个 AI 项目交付落地，自建 GPU 算力平台。
-              </motion.p>
+                {/* Act 3 — tagline */}
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.1, duration: 0.7, ease: EASE }}
+                  style={{ fontSize: "clamp(0.92em, 1.4vw, 1.02em)", color: SUB, maxWidth: 560, lineHeight: 1.8, marginBottom: 56 }}
+                >
+                  不等资源 · 不限技术栈 · 快速交付。9 个 AI 项目交付落地，自建 GPU 算力平台。
+                </motion.p>
 
-              {/* Act 4 — stats */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.15, duration: 0.6 }}
-                style={{ display: "flex", gap: "clamp(48px, 8vw, 96px)", flexWrap: "wrap", marginBottom: 72 }}
-              >
-                {[
-                  { end: 9, suffix: "", lbl: "已交付项目" },
-                  { end: 2, suffix: " 月", lbl: "平均交付周期" },
-                ].map((stat, i) => (
-                  <AnimatedNumber key={i} delay={1.3 + i * 0.2} {...stat} />
-                ))}
+                {/* Act 4 — stats */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.35, duration: 0.7, ease: EASE }}
+                  style={{ display: "flex", gap: "clamp(48px, 8vw, 96px)", flexWrap: "wrap", marginBottom: 72 }}
+                >
+                  {[
+                    { end: 9, suffix: "", lbl: "已交付项目" },
+                    { end: 2, suffix: " 月", lbl: "平均交付周期" },
+                  ].map((stat, i) => (
+                    <AnimatedNumber key={i} delay={1.5 + i * 0.2} {...stat} />
+                  ))}
+                </motion.div>
               </motion.div>
 
               {/* Act 5 — scroll hint */}
