@@ -55,6 +55,29 @@ const PROJECTS = [
     img: "钉钉对话截图",
   },
   {
+    id: "rag",
+    name: "保险客服 LLM 全链路",
+    badge: "RAG + 模型微调",
+    desc: "为保险集团客服机器人构建 RAG+SFT+RLHF 完整技术链路：BGE-M3 双向量检索支撑 6 大客服场景，高频问题响应提速 40%。",
+    tags: ["RAG", "BGE-M3", "LoRA", "RLHF", "Qwen"],
+    color: "#f97316",
+    metrics: [
+      { big: "40%", lbl: "高频问题响应提速" },
+      { big: "7 万条", lbl: "RLHF 数据对" },
+      { big: "6 大", lbl: "客服场景覆盖" },
+    ],
+    pain: "保险客服面对的是保单查询、条款解读、理赔指引等高专业度问题，回答必须准确、完整、分步骤，还要安抚客户情绪——更不能出现幻觉式承诺。客服日志与保单条款格式各异、非结构化数据量大，传统检索方案召回不准，人工客服压力巨大。",
+    solution: [
+      "搭建双层向量知识库（保单条款+客服日志），BGE-M3 双向量架构实现 sparse 全库关键词检索 + dense 精排，问答闭环切分策略替代固定窗口切分",
+      "自定义 Prompt 模板内置四场景约束（准确性/完整性/步骤化/情绪接纳），防止幻觉与越权承诺",
+      "SFT 微调全流程：真实客服日志按完整性/准确性/情绪安抚三维度质量分层筛选，LoRA 2-3 轮迭代，累计 10,000+ 条训练语料",
+      "深度参与 10 个标注项目共 70,000 条数据对的 RLHF 强化训练，基于用户点击反馈与会话终止率动态调整回答优先级",
+      "\"OCR 图像抽取→RAG 检索整合\"多模态链路：图像类咨询响应从 45 秒降至 36 秒；\"OCR+关键词兜底\"使手写单据提取成功率从 62% 提升至 78%，投诉率下降 8%",
+    ],
+    decision: "RAG 不是把文档塞进提示词。BGE-M3 双向量 sparse 全库检索 + dense 精排，让保单条款和客服日志各归其位——检索质量决定回答质量。",
+    img: "保险客服对话界面截图",
+  },
+  {
     id: "ocr",
     name: "报价单 OCR 自动匹配",
     badge: "桌面工具",
@@ -679,7 +702,7 @@ function ContactPage() {
           >
             获取项目介绍
           </motion.a>
-          <p style={{ fontSize: "0.72em", color: FAINT, marginTop: 20 }}>8 个 AI 项目 · 从需求到交付全流程覆盖</p>
+          <p style={{ fontSize: "0.72em", color: FAINT, marginTop: 20 }}>9 个 AI 项目 · 从需求到交付全流程覆盖</p>
         </div>
       </motion.div>
     </motion.div>
@@ -852,7 +875,7 @@ export default function App() {
                 </h1>
                 <div style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(1em, 2vw, 1.3em)", color: FAINT, marginTop: 20 }}>
                   从需求，到交付 —{" "}
-                  <span style={{ color: LIME }}>8 tools in production.</span>
+                  <span style={{ color: LIME }}>9 tools in production.</span>
                 </div>
               </motion.div>
 
@@ -863,7 +886,7 @@ export default function App() {
                 transition={{ delay: 0.85, duration: 0.6 }}
                 style={{ fontSize: "clamp(0.92em, 1.4vw, 1.02em)", color: SUB, maxWidth: 560, lineHeight: 1.8, marginBottom: 56 }}
               >
-                不等资源 · 不限技术栈 · 快速交付。8 个 AI 项目落地使用，自建 GPU 算力平台。
+                不等资源 · 不限技术栈 · 快速交付。9 个 AI 项目交付落地，自建 GPU 算力平台。
               </motion.p>
 
               {/* Act 4 — stats */}
@@ -874,7 +897,7 @@ export default function App() {
                 style={{ display: "flex", gap: "clamp(48px, 8vw, 96px)", flexWrap: "wrap", marginBottom: 72 }}
               >
                 {[
-                  { end: 8, suffix: "", lbl: "已交付项目" },
+                  { end: 9, suffix: "", lbl: "已交付项目" },
                   { end: 2, suffix: " 月", lbl: "平均交付周期" },
                 ].map((stat, i) => (
                   <AnimatedNumber key={i} delay={1.3 + i * 0.2} {...stat} />
@@ -963,7 +986,7 @@ export default function App() {
               {/* Capabilities highlight */}
               <div style={{ marginTop: 88, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 1, background: LINE, border: `1px solid ${LINE}` }}>
                 {[
-                  { t: "8 个项目", d: "全部闭环交付\n已投入实际使用" },
+                  { t: "9 个项目", d: "全部闭环交付\n已投入实际使用" },
                   { t: "2 个月", d: "平均交付周期\n从需求确认到上线" },
                   { t: "4 个 AI 服务", d: "自建 GPU 服务器 7×24\n无人值守稳定运行" },
                   { t: "5 项能力", d: "AI 应用 · 计算机视觉\n全栈开发 · 运维 · 项目管理" },
