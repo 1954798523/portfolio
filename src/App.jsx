@@ -1226,7 +1226,7 @@ export default function App() {
             <div
               style={{
                 position: "absolute", inset: 0, zIndex: 1,
-                background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.55) 100%)",
+                background: "linear-gradient(180deg, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.06) 40%, rgba(0,0,0,0.06) 65%, rgba(0,0,0,0.42) 100%)",
               }}
             />
             <span
