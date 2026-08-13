@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from "motion/react";
+import heroLight from "./hero-light.jpg";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -245,6 +246,12 @@ const SKILLS = [
 // ====== STARFIELD (twinkling stars + rising lime dust) ======
 function FloatingEmbers() {
   const canvasRef = useRef(null);
+  const [lit, setLit] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLit(true), 150);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const c = canvasRef.current;
@@ -320,7 +327,56 @@ function FloatingEmbers() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }} />;
+  return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, opacity: lit ? 1 : 0, transition: "opacity 2.6s ease" }} />;
+}
+
+// ====== WATCHFUL EYE (pupil follows cursor) ======
+function WatchfulEye() {
+  const pupilX = useMotionValue(0);
+  const pupilY = useMotionValue(0);
+  const sx = useSpring(pupilX, { stiffness: 50, damping: 14 });
+  const sy = useSpring(pupilY, { stiffness: 50, damping: 14 });
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    const onMove = (e) => {
+      const el = wrapRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const max = Math.min(r.width, r.height) * 0.22;
+      const dist = Math.hypot(dx, dy) || 1;
+      const mag = Math.min(dist / 260, 1) * max;
+      pupilX.set((dx / dist) * mag);
+      pupilY.set((dy / dist) * mag);
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [pupilX, pupilY]);
+
+  return (
+    <div
+      ref={wrapRef}
+      style={{
+        position: "fixed", right: "4vw", bottom: "6vh",
+        width: "clamp(120px, 16vw, 200px)", opacity: 0.5, pointerEvents: "none", zIndex: 1,
+      }}
+    >
+      <svg viewBox="0 0 220 140" style={{ width: "100%", height: "auto", display: "block" }}>
+        {/* 眼白 */}
+        <ellipse cx={110} cy={70} rx={100} ry={62} fill="none" stroke={INK} strokeWidth={1.4} />
+        {/* 虹膜 + 瞳孔（跟随鼠标） */}
+        <motion.g style={{ x: sx, y: sy }}>
+          <circle cx={110} cy={70} r={34} fill="none" stroke={INK} strokeWidth={1} />
+          <circle cx={110} cy={70} r={14} fill="#000" stroke={INK} strokeWidth={1} />
+          <circle cx={116} cy={64} r={4} fill={INK} />
+        </motion.g>
+      </svg>
+    </div>
+  );
 }
 
 // ====== SCROLL PROGRESS ======
@@ -1107,6 +1163,7 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: "#000", color: INK, fontFamily: SANS, lineHeight: 1.7, overflowX: "hidden" }}>
       <FloatingEmbers />
+      <WatchfulEye />
       <ScrollProgress />
 
       {/* Nav */}
@@ -1155,6 +1212,22 @@ export default function App() {
             transition={{ duration: 0.35 }}
             style={{ padding: "clamp(140px, 20vh, 200px) clamp(20px, 4.5vw, 72px) 80px", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }}
           >
+            {/* 首屏光影人像背景 */}
+            <div
+              style={{
+                position: "absolute", inset: 0, zIndex: 0,
+                backgroundImage: `url(${heroLight})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            {/* 暗色遮罩，保证标题可读 */}
+            <div
+              style={{
+                position: "absolute", inset: 0, zIndex: 1,
+                background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.55) 100%)",
+              }}
+            />
             <span
               aria-hidden
               style={{
@@ -1184,6 +1257,19 @@ export default function App() {
 
                 {/* Act 2 — mega headline, asymmetric editorial + bleeding */}
                 <div style={{ marginBottom: 48, position: "relative" }}>
+                  {/* Opening lime line */}
+                  <motion.div
+                    initial={{ scaleY: 0, opacity: 0 }}
+                    animate={{ scaleY: 1, opacity: [0, 1, 0] }}
+                    transition={{
+                      scaleY: { delay: 0.05, duration: 0.5, ease: "easeInOut" },
+                      opacity: { delay: 0.05, duration: 0.55, times: [0, 0.45, 1] },
+                    }}
+                    style={{
+                      position: "absolute", left: "calc(50% - 1px)", top: "-0.2em", bottom: "0.2em",
+                      width: 2, background: LIME, transformOrigin: "center top", zIndex: 0,
+                    }}
+                  />
                   {/* Watermark number bleeding out top-right */}
                   <span
                     aria-hidden
@@ -1199,10 +1285,7 @@ export default function App() {
                     09
                   </span>
 
-                  <motion.h1
-                    initial={{ opacity: 0, y: 70, filter: "blur(10px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ delay: 0.4, duration: 1.0, ease: EASE }}
+                  <h1
                     style={{
                       fontFamily: SERIF, fontSize: "clamp(3.6em, 16vw, 14em)",
                       fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 0.86,
@@ -1210,13 +1293,21 @@ export default function App() {
                       textAlign: "center",
                     }}
                   >
-                    THEREFORE
-                  </motion.h1>
+                    {"THEREFORE".split("").map((ch, i) => (
+                      <span key={i} style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom" }}>
+                        <motion.span
+                          initial={{ y: "1.1em" }}
+                          animate={{ y: 0 }}
+                          transition={{ delay: 0.6 + i * 0.05, duration: 0.75, ease: EASE }}
+                          style={{ display: "inline-block" }}
+                        >
+                          {ch}
+                        </motion.span>
+                      </span>
+                    ))}
+                  </h1>
 
-                  <motion.h1
-                    initial={{ opacity: 0, y: 70, filter: "blur(10px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ delay: 0.56, duration: 1.0, ease: EASE }}
+                  <h1
                     style={{
                       fontFamily: SERIF, fontStyle: "italic",
                       fontSize: "clamp(2.6em, 11vw, 9.5em)",
@@ -1225,8 +1316,22 @@ export default function App() {
                       textAlign: "center",
                     }}
                   >
-                    I&nbsp;CREATE<span style={{ color: LIME }}>;</span>
-                  </motion.h1>
+                    {"I CREATE;".split("").map((ch, i) => {
+                      const semi = ch === ";";
+                      return (
+                        <span key={i} style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom" }}>
+                          <motion.span
+                            initial={{ y: "1.1em" }}
+                            animate={{ y: 0 }}
+                            transition={{ delay: 1.1 + i * 0.05, duration: 0.7, ease: EASE }}
+                            style={{ display: "inline-block", color: semi ? LIME : undefined }}
+                          >
+                            {ch === " " ? " " : ch}
+                          </motion.span>
+                        </span>
+                      );
+                    })}
+                  </h1>
 
                   <motion.div
                     initial={{ opacity: 0, filter: "blur(8px)" }}
