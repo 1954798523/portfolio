@@ -1226,7 +1226,7 @@ export default function App() {
             <div
               style={{
                 position: "absolute", inset: 0, zIndex: 1,
-                background: "linear-gradient(180deg, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.06) 40%, rgba(0,0,0,0.06) 65%, rgba(0,0,0,0.42) 100%)",
+                background: "linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0) 65%, rgba(0,0,0,0.32) 100%)",
               }}
             />
             <span
@@ -1289,22 +1289,21 @@ export default function App() {
                   <h1
                     style={{
                       fontFamily: SERIF, fontSize: "clamp(3.6em, 16vw, 14em)",
-                      fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 0.86,
+                      fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.05,
                       margin: 0, whiteSpace: "nowrap", position: "relative", zIndex: 1,
                       textAlign: "center",
                     }}
                   >
                     {"THEREFORE".split("").map((ch, i) => (
-                      <span key={i} style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom" }}>
-                        <motion.span
-                          initial={{ y: "1.1em" }}
-                          animate={{ y: 0 }}
-                          transition={{ delay: 0.6 + i * 0.05, duration: 0.75, ease: EASE }}
-                          style={{ display: "inline-block" }}
-                        >
-                          {ch}
-                        </motion.span>
-                      </span>
+                      <motion.span
+                        key={i}
+                        initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+                        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                        transition={{ delay: 0.6 + i * 0.05, duration: 0.7, ease: EASE }}
+                        style={{ display: "inline-block" }}
+                      >
+                        {ch}
+                      </motion.span>
                     ))}
                   </h1>
 
@@ -1312,22 +1311,21 @@ export default function App() {
                     style={{
                       fontFamily: SERIF, fontStyle: "italic",
                       fontSize: "clamp(2.6em, 11vw, 9.5em)",
-                      fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 0.9,
+                      fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.05,
                       margin: "0.06em 0 0", whiteSpace: "nowrap", position: "relative", zIndex: 1,
                       textAlign: "center",
                     }}
                   >
                     {"I CREATE".split("").map((ch, i) => (
-                        <span key={i} style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom" }}>
-                          <motion.span
-                            initial={{ y: "1.1em" }}
-                            animate={{ y: 0 }}
-                            transition={{ delay: 1.1 + i * 0.05, duration: 0.7, ease: EASE }}
-                            style={{ display: "inline-block" }}
-                          >
+                        <motion.span
+                          key={i}
+                          initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+                          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                          transition={{ delay: 1.1 + i * 0.05, duration: 0.7, ease: EASE }}
+                          style={{ display: "inline-block" }}
+                        >
                             {ch === " " ? " " : ch}
-                          </motion.span>
-                        </span>
+                        </motion.span>
                     ))}
                   </h1>
 
