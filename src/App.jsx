@@ -1218,7 +1218,7 @@ export default function App() {
                 position: "absolute", inset: 0, zIndex: 0,
                 backgroundImage: `url(${heroLight})`,
                 backgroundSize: "contain",
-                backgroundPosition: "center",
+                backgroundPosition: "center top",
                 backgroundRepeat: "no-repeat",
               }}
             />
