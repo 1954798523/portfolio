@@ -210,21 +210,25 @@ const PROJECTS = [
 const DIFFS = [
   {
     icon: "01",
+    en: "END-TO-END",
     title: "端到端交付",
     text: "需求分析到上线运维全流程覆盖。不依赖外部资源，项目不因跨团队协调而卡顿，交付周期缩短 70%。",
   },
   {
     icon: "02",
+    en: "FLEXIBLE",
     title: "技术栈灵活",
     text: "Python、React、ComfyUI、DingTalk Bot、桌面应用——根据业务场景选择最优方案，不为技术栈设限。",
   },
   {
     icon: "03",
+    en: "SELF-BUILT",
     title: "自建 AI 基础设施",
     text: "自建 GPU 工作站，模型部署与训练硬件平台，7×24 稳定运行，全流程独立可控。",
   },
   {
     icon: "04",
+    en: "ITERATE",
     title: "快速验证迭代",
     text: "发现问题当日出原型，用实际反馈驱动迭代，而非文档驱动开发。原型平均 2 天，完整交付约 2 个月。",
   },
@@ -238,36 +242,63 @@ const SKILLS = [
   { label: "项目管理", w: "95%", note: "需求→设计→开发→部署→交付" },
 ];
 
-// ====== FLOATING EMBERS (white/lime dust) ======
+// ====== STARFIELD (twinkling stars + rising lime dust) ======
 function FloatingEmbers() {
-  const embers = useRef([]);
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const c = canvasRef.current;
     const ctx = c.getContext("2d");
-    const rect = c.parentElement.getBoundingClientRect();
-    c.width = rect.width;
-    c.height = rect.height;
 
-    const colors = ["#d4ff00", "#f4f4f2", "#f4f4f2"];
-    const count = 14;
-    for (let i = 0; i < count; i++) {
-      embers.current.push({
+    const resize = () => {
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const stars = [];
+    const starCount = Math.min(120, Math.floor((c.width * c.height) / 17000));
+    for (let i = 0; i < starCount; i++) {
+      stars.push({
         x: Math.random() * c.width,
         y: Math.random() * c.height,
-        r: Math.random() * 1.2 + 0.4,
-        vy: -(Math.random() * 0.22 + 0.06),
-        vx: (Math.random() - 0.5) * 0.15,
-        alpha: Math.random() * 0.28 + 0.08,
-        color: colors[i % colors.length],
+        r: Math.random() * 1.1 + 0.3,
+        base: Math.random() * 0.5 + 0.12,
+        speed: Math.random() * 1.1 + 0.25,
+        phase: Math.random() * Math.PI * 2,
+        lime: Math.random() < 0.08,
       });
     }
 
+    const dust = [];
+    for (let i = 0; i < 12; i++) {
+      dust.push({
+        x: Math.random() * c.width,
+        y: Math.random() * c.height,
+        r: Math.random() * 1.2 + 0.5,
+        vy: -(Math.random() * 0.22 + 0.06),
+        vx: (Math.random() - 0.5) * 0.15,
+        alpha: Math.random() * 0.25 + 0.08,
+      });
+    }
+
+    let t = 0;
     let anim;
     function draw() {
+      t += 0.02;
       ctx.clearRect(0, 0, c.width, c.height);
-      for (const e of embers.current) {
+      // twinkling stars
+      for (const s of stars) {
+        const a = s.base * (0.45 + 0.55 * Math.sin(t * s.speed + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = s.lime ? "#d4ff00" : "#f4f4f2";
+        ctx.globalAlpha = Math.max(0, a);
+        ctx.fill();
+      }
+      // rising lime dust
+      for (const e of dust) {
         e.y += e.vy;
         e.x += e.vx;
         if (e.y < -10) { e.y = c.height + 10; e.x = Math.random() * c.width; }
@@ -275,18 +306,21 @@ function FloatingEmbers() {
         if (e.x > c.width + 10) e.x = -10;
         ctx.beginPath();
         ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
-        ctx.fillStyle = e.color;
+        ctx.fillStyle = "#d4ff00";
         ctx.globalAlpha = e.alpha;
         ctx.fill();
-        ctx.globalAlpha = 1;
       }
+      ctx.globalAlpha = 1;
       anim = requestAnimationFrame(draw);
     }
     draw();
-    return () => cancelAnimationFrame(anim);
+    return () => {
+      cancelAnimationFrame(anim);
+      window.removeEventListener("resize", resize);
+    };
   }, []);
 
-  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }} />;
+  return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }} />;
 }
 
 // ====== SCROLL PROGRESS ======
@@ -425,8 +459,203 @@ function DiffStatement({ d, index }) {
   );
 }
 
+// ====== KNOWLEDGE GRAPH (force-directed · Obsidian-style, 持续运动) ======
+const KG_NODES = [
+  { label: "全栈开发", type: "center" },
+  { label: "AI 应用", type: "core" },
+  { label: "计算机视觉", type: "core" },
+  { label: "DeepSeek", type: "tech" },
+  { label: "RAG", type: "tech" },
+  { label: "Python", type: "tech" },
+  { label: "React", type: "tech" },
+  { label: "ComfyUI", type: "tech" },
+  { label: "OCR", type: "tech" },
+  { label: "GPU", type: "tech" },
+  { label: "DingTalk", type: "core" },
+  { label: "知识库", type: "core" },
+  { label: "端到端", type: "core" },
+  { label: "自建AI", type: "core" },
+  { label: "运维", type: "core" },
+  { label: "项目管理", type: "core" },
+  { label: "需求分析", type: "core" },
+  { label: "迭代交付", type: "core" },
+];
+
+const KG_EDGES = [
+  [0, 1], [0, 2], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14], [0, 15], [0, 16], [0, 17],
+  [1, 3], [1, 4], [1, 5], [1, 6],
+  [2, 7], [2, 8], [2, 9],
+  [3, 4], [4, 5], [6, 5], [8, 9],
+  [10, 11], [10, 4], [11, 3], [11, 13],
+  [13, 9], [13, 14], [12, 16], [12, 17], [14, 15], [16, 17],
+];
+
+const KG_W = 1000, KG_H = 640;
+
+function kgInit() {
+  return KG_NODES.map((n, i) => {
+    const angle = (i / KG_NODES.length) * Math.PI * 2;
+    const rad = 170 + (i % 3) * 70;
+    return {
+      ...n,
+      x: KG_W / 2 + Math.cos(angle) * rad,
+      y: KG_H / 2 + Math.sin(angle) * rad * 0.78,
+      vx: 0,
+      vy: 0,
+    };
+  });
+}
+
+function kgSimulate(nodes, edges, t) {
+  const cx = KG_W / 2, cy = KG_H / 2;
+  const repulsion = 5200, spring = 0.01, restLen = 260, gravity = 0.003, damping = 0.9;
+  const fx = new Array(nodes.length).fill(0);
+  const fy = new Array(nodes.length).fill(0);
+
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[j].x - nodes[i].x;
+      const dy = nodes[j].y - nodes[i].y;
+      const d = Math.sqrt(dx * dx + dy * dy) || 1;
+      const f = repulsion / (d * d);
+      const ux = dx / d, uy = dy / d;
+      fx[i] -= ux * f; fy[i] -= uy * f;
+      fx[j] += ux * f; fy[j] += uy * f;
+    }
+  }
+  for (let k = 0; k < edges.length; k++) {
+    const a = edges[k][0], b = edges[k][1];
+    const dx = nodes[b].x - nodes[a].x;
+    const dy = nodes[b].y - nodes[a].y;
+    const d = Math.sqrt(dx * dx + dy * dy) || 1;
+    const f = (d - restLen) * spring;
+    const ux = dx / d, uy = dy / d;
+    fx[a] += ux * f; fy[a] += uy * f;
+    fx[b] -= ux * f; fy[b] -= uy * f;
+  }
+
+  return nodes.map((n, i) => {
+    let vx = (n.vx + fx[i]) * damping;
+    let vy = (n.vy + fy[i]) * damping;
+    vx += (cx - n.x) * gravity;
+    vy += (cy - n.y) * gravity;
+    vx += Math.sin(t * 0.012 + i * 1.7) * 0.06;
+    vy += Math.cos(t * 0.012 + i * 2.3) * 0.06;
+    let x = n.x + vx;
+    let y = n.y + vy;
+    x = Math.max(20, Math.min(KG_W - 20, x));
+    y = Math.max(30, Math.min(KG_H - 30, y));
+    return { ...n, x, y, vx, vy };
+  });
+}
+
+function GraphView() {
+  const nodesRef = useRef(kgInit());
+  const timeRef = useRef(0);
+  const [, setTick] = useState(0);
+  const [hover, setHover] = useState(null);
+
+  useEffect(() => {
+    let raf;
+    const step = () => {
+      timeRef.current += 1;
+      nodesRef.current = kgSimulate(nodesRef.current, KG_EDGES, timeRef.current);
+      setTick((t) => t + 1);
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const nodes = nodesRef.current;
+  const hoverSet = hover
+    ? new Set([hover, ...KG_EDGES.filter(([a, b]) => a === hover || b === hover).flatMap(([a, b]) => [a, b])])
+    : null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.9, ease: EASE }}
+      style={{ margin: "8px 0 8px" }}
+    >
+      <svg viewBox={`0 0 ${KG_W} ${KG_H}`} style={{ width: "100%", height: "auto", display: "block" }}>
+        {/* edges */}
+        {KG_EDGES.map(([a, b], i) => {
+          const na = nodes[a], nb = nodes[b];
+          const active = hoverSet && (hoverSet.has(a) || hoverSet.has(b));
+          const dim = hoverSet && !active;
+          return (
+            <line
+              key={i}
+              x1={na.x} y1={na.y} x2={nb.x} y2={nb.y}
+              stroke={active ? LIME : LINE}
+              strokeWidth={active ? 1.6 : 1}
+              opacity={dim ? 0.05 : active ? 0.95 : 0.45}
+              style={{ transition: "opacity 0.3s, stroke 0.3s" }}
+            />
+          );
+        })}
+
+        {/* nodes */}
+        {nodes.map((n, i) => {
+          const dim = hoverSet && !hoverSet.has(i);
+          const isHover = hover === i;
+          const r = n.type === "center" ? 15 : n.type === "core" ? 10 : 6;
+          const fill = n.type === "center" ? LIME : n.type === "core" ? "#000" : "#151515";
+          const stroke = n.type === "center" ? LIME : n.type === "core" ? INK : FAINT;
+          return (
+            <g
+              key={i}
+              onMouseEnter={() => setHover(i)}
+              onMouseLeave={() => setHover(null)}
+              style={{ cursor: "pointer", opacity: dim ? 0.15 : 1, transition: "opacity 0.3s" }}
+            >
+              {n.type === "center" && (
+                <circle cx={n.x} cy={n.y} r={r + 10} fill="none" stroke={LIME} strokeWidth={1} opacity={0.3} />
+              )}
+              <circle
+                cx={n.x} cy={n.y} r={isHover ? r * 1.4 : r}
+                fill={fill} stroke={stroke} strokeWidth={n.type === "center" ? 0 : 1.5}
+                style={{ transition: "r 0.2s" }}
+              />
+              {n.type === "center" && (
+                <text x={n.x} y={n.y + 3} textAnchor="middle" fill="#000" fontSize={10} fontWeight={700} fontFamily={SANS}>{n.label}</text>
+              )}
+              {n.type === "core" && (
+                <text x={n.x + r + 6} y={n.y + 3} textAnchor="start" fill={INK} fontSize={11} fontFamily={SANS}>{n.label}</text>
+              )}
+              {n.type === "tech" && (
+                <text x={n.x + r + 5} y={n.y + 3} textAnchor="start" fill={SUB} fontSize={9} fontFamily={SANS}>{n.label}</text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+
+      <div style={{ textAlign: "center", color: FAINT, fontSize: "0.72em", letterSpacing: "0.08em", marginTop: 4 }}>
+        持续演化的工程知识图谱 · 悬停查看关联
+      </div>
+    </motion.div>
+  );
+}
+
 // ====== PROJECT SHOWCASE (staggered split layout) ======
 const RATIOS = ["4/3", "1/1", "3/4", "4/3", "1/1", "3/4", "4/3", "1/1"];
+const X_OFFSETS = ["0%", "-13%", "9%", "-7%", "11%", "-15%", "6%", "-10%", "4%"];
+// 图文排序变体：side 左右 / stack 上下 / vertical 竖排文字
+const LAYOUTS = [
+  { dir: "row", mode: "side" },
+  { dir: "row-reverse", mode: "side" },
+  { dir: "column", mode: "stack" },
+  { dir: "column-reverse", mode: "stack" },
+  { dir: "row", mode: "vertical" },
+  { dir: "row-reverse", mode: "vertical" },
+  { dir: "row", mode: "side" },
+  { dir: "column", mode: "stack" },
+  { dir: "row-reverse", mode: "side" },
+];
 
 const showcaseContainer = {
   hidden: {},
@@ -437,14 +666,17 @@ const textSlide = (reversed) => ({
   show: { opacity: 1, x: 0, transition: { duration: 0.75, ease: EASE } },
 });
 const blockSlide = (reversed) => ({
-  hidden: { opacity: 0, x: reversed ? -48 : 48, scale: 0.97 },
-  show: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.85, ease: EASE } },
+  hidden: { opacity: 0, x: reversed ? -48 : 48, scale: 0.97, rotate: 0 },
+  show: { opacity: 1, x: 0, scale: 1, rotate: reversed ? -1.6 : 1.6, transition: { duration: 0.85, ease: EASE } },
 });
 
 function ProjectShowcase({ project, index, onClick }) {
-  const reversed = index % 2 === 1;
+  const layout = LAYOUTS[index % LAYOUTS.length];
+  const reversed = layout.dir === "row-reverse";
   const ratio = RATIOS[index % RATIOS.length];
   const [hover, setHover] = useState(false);
+  const isStack = layout.mode === "stack";
+  const isVertical = layout.mode === "vertical";
 
   return (
     <motion.div
@@ -455,19 +687,26 @@ function ProjectShowcase({ project, index, onClick }) {
       onClick={() => onClick(project.id)}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      style={{ cursor: "pointer", marginBottom: "clamp(64px, 10vw, 110px)" }}
+      style={{ cursor: "pointer", marginBottom: "clamp(64px, 10vw, 110px)", marginLeft: X_OFFSETS[index % X_OFFSETS.length] }}
     >
       <div
         style={{
           display: "flex",
           gap: "clamp(24px, 4vw, 64px)",
-          flexDirection: reversed ? "row-reverse" : "row",
-          alignItems: "center",
+          flexDirection: layout.dir,
+          alignItems: isStack ? "stretch" : "center",
           flexWrap: "wrap",
         }}
       >
         {/* Text side */}
-        <motion.div variants={textSlide(reversed)} style={{ flex: "1 1 300px", maxWidth: 440, marginRight: reversed ? "auto" : 0, marginLeft: reversed ? 0 : "auto" }}>
+        <motion.div
+          variants={textSlide(reversed)}
+          style={
+            isVertical
+              ? { flex: "0 0 auto", width: "auto", maxWidth: 200, maxHeight: 480, writingMode: "vertical-rl", textOrientation: "mixed" }
+              : { flex: "1 1 300px", maxWidth: isStack ? 640 : 440, marginRight: reversed ? "auto" : 0, marginLeft: reversed ? 0 : "auto" }
+          }
+        >
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
             <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "1em", color: LIME }}>
               {String(index + 1).padStart(2, "0")}
@@ -496,27 +735,52 @@ function ProjectShowcase({ project, index, onClick }) {
         <motion.div
           variants={blockSlide(reversed)}
           style={{
-            flex: "1 1 340px",
+            flex: isStack ? "1 1 auto" : "1 1 340px",
+            maxWidth: isStack ? "100%" : "clamp(420px, 44vw, 760px)",
             aspectRatio: ratio,
             borderRadius: 4,
             background: `linear-gradient(160deg, ${project.color}30, ${project.color}12)`,
             border: `1px solid ${project.color}45`,
             position: "relative",
             overflow: "hidden",
+            marginTop: reversed ? "clamp(0px, 4vw, 44px)" : 0,
+            marginBottom: reversed ? 0 : "clamp(0px, 4vw, 44px)",
           }}
         >
+          {/* eerie concentric ring texture */}
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="xMidYMid slice"
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+          >
+            {[...Array(14)].map((_, i) => (
+              <circle
+                key={i}
+                cx={reversed ? 26 : 74}
+                cy={reversed ? 74 : 26}
+                r={4 + i * 5.2}
+                fill="none"
+                stroke={project.color}
+                strokeOpacity={0.16 - i * 0.01}
+                strokeWidth={i % 3 === 0 ? 0.8 : 0.4}
+              />
+            ))}
+          </svg>
+
           <motion.div
-            animate={hover ? { scale: 1.06 } : { scale: 1 }}
+            animate={hover ? { scale: 1.08 } : { scale: 1 }}
             transition={{ duration: 0.6, ease: EASE }}
             style={{
-              position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+              position: "absolute", inset: 0, display: "flex",
+              alignItems: "flex-end", justifyContent: "flex-start", padding: "0 0 0 6%",
             }}
           >
             <span
               style={{
                 fontFamily: SERIF, fontStyle: "italic",
-                fontSize: "clamp(5em, 14vw, 10em)", fontWeight: 800,
-                color: `${project.color}38`, letterSpacing: "-0.04em", lineHeight: 1,
+                fontSize: "clamp(7em, 22vw, 16em)", fontWeight: 800,
+                color: `${project.color}40`, letterSpacing: "-0.05em", lineHeight: 0.75,
+                transform: "translateY(30%)",
               }}
             >
               {String(index + 1).padStart(2, "0")}
@@ -539,7 +803,7 @@ function DetailPage({ project, onBack }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.35 }}
-      style={{ maxWidth: 860, margin: "0 auto", padding: "140px 32px 80px" }}
+      style={{ maxWidth: 1080, margin: "0 auto", padding: "140px 32px 80px" }}
     >
       <button
         onClick={onBack}
@@ -642,7 +906,7 @@ function SkillsPage() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
-      style={{ maxWidth: 860, margin: "0 auto", padding: "140px 32px 80px" }}
+      style={{ maxWidth: 1080, margin: "0 auto", padding: "140px 32px 80px" }}
     >
       <div style={{ color: LIME, fontSize: "0.7em", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16 }}>Skills</div>
       <h2 style={{ fontFamily: SERIF, fontSize: "clamp(1.8em, 4vw, 2.4em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", marginBottom: 12 }}>技术能力分布</h2>
@@ -691,7 +955,7 @@ function ContactPage() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
-      style={{ maxWidth: 860, margin: "0 auto", padding: "140px 32px 80px" }}
+      style={{ maxWidth: 1080, margin: "0 auto", padding: "140px 32px 80px" }}
     >
       <div style={{ maxWidth: 720, margin: "0 auto 64px" }}>
         <div style={{ color: LIME, fontSize: "0.7em", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16 }}>About</div>
@@ -779,38 +1043,6 @@ function ContactPage() {
   );
 }
 
-// ====== ANIMATED NUMBER ======
-function AnimatedNumber({ end, suffix = "", lbl, delay = 0 }) {
-  const [val, setVal] = useState(0);
-  const started = useRef(false);
-
-  useEffect(() => {
-    if (started.current) return;
-    started.current = true;
-    const startAt = performance.now() + delay * 1000;
-    const duration = 1200;
-    function tick() {
-      const elapsed = performance.now() - startAt;
-      if (elapsed < 0) { requestAnimationFrame(tick); return; }
-      const t = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setVal(Math.round(end * eased));
-      if (t < 1) requestAnimationFrame(tick);
-      else setVal(end);
-    }
-    requestAnimationFrame(tick);
-  }, [end, delay]);
-
-  return (
-    <div>
-      <div style={{ fontFamily: SERIF, fontSize: "clamp(2.6em, 5vw, 3.6em)", fontWeight: 700, color: INK, letterSpacing: "-0.02em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
-        {val}{suffix}
-      </div>
-      <div style={{ fontSize: "0.72em", color: FAINT, marginTop: 8, letterSpacing: "0.06em" }}>{lbl}</div>
-    </div>
-  );
-}
-
 // ====== HASH ROUTING ======
 function parseHash() {
   const h = window.location.hash;
@@ -874,11 +1106,12 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#000", color: INK, fontFamily: SANS, lineHeight: 1.7, overflowX: "hidden" }}>
+      <FloatingEmbers />
       <ScrollProgress />
 
       {/* Nav */}
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, background: "rgba(0,0,0,0.88)", backdropFilter: "blur(14px)", borderBottom: `1px solid ${LINE}` }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 32px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px clamp(20px, 4.5vw, 72px)" }}>
           <button
             onClick={() => { setDetailId(null); setPage("home"); }}
             style={{
@@ -920,17 +1153,15 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35 }}
-            style={{ maxWidth: 1000, margin: "0 auto", padding: "clamp(140px, 20vh, 200px) 32px 80px", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }}
+            style={{ padding: "clamp(140px, 20vh, 200px) clamp(20px, 4.5vw, 72px) 80px", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }}
           >
-            <FloatingEmbers />
-
             <span
               aria-hidden
               style={{
-                position: "absolute", right: 24, top: "50%",
+                position: "absolute", right: "-3vw", top: "50%",
                 transform: "translateY(-50%)",
                 writingMode: "vertical-rl",
-                fontSize: "0.64em", letterSpacing: "0.5em",
+                fontSize: "0.7em", letterSpacing: "0.5em",
                 color: FAINT, textTransform: "uppercase",
                 opacity: 0.7, pointerEvents: "none", zIndex: 1,
               }}
@@ -946,38 +1177,62 @@ export default function App() {
                   initial={{ opacity: 0, filter: "blur(8px)" }}
                   animate={{ opacity: 1, filter: "blur(0px)" }}
                   transition={{ delay: 0.2, duration: 0.9, ease: EASE }}
-                  style={{ fontSize: "0.72em", letterSpacing: "0.3em", textTransform: "uppercase", color: FAINT, marginBottom: 44 }}
+                  style={{ fontSize: "0.72em", letterSpacing: "0.3em", textTransform: "uppercase", color: FAINT, marginBottom: 44, textAlign: "center" }}
                 >
                   王梓宇 — <span style={{ color: LIME }}>AI 应用工程师</span>
                 </motion.div>
 
-                {/* Act 2 — mega headline, mask reveal line by line */}
-                <div style={{ marginBottom: 40 }}>
-                  <div style={{ overflow: "hidden" }}>
-                    <motion.h1
-                      initial={{ y: "108%" }}
-                      animate={{ y: 0 }}
-                      transition={{ delay: 0.4, duration: 1.0, ease: EASE }}
-                      style={{ fontFamily: SERIF, fontSize: "clamp(3.4em, 11.5vw, 8.6em)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 0.98, margin: 0 }}
-                    >
-                      THEREFORE
-                    </motion.h1>
-                  </div>
-                  <div style={{ overflow: "hidden" }}>
-                    <motion.h1
-                      initial={{ y: "108%" }}
-                      animate={{ y: 0 }}
-                      transition={{ delay: 0.58, duration: 1.0, ease: EASE }}
-                      style={{ fontFamily: SERIF, fontSize: "clamp(3.4em, 11.5vw, 8.6em)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.04, margin: 0 }}
-                    >
-                      I&nbsp;CREATE<span style={{ color: LIME }}>;</span>
-                    </motion.h1>
-                  </div>
+                {/* Act 2 — mega headline, asymmetric editorial + bleeding */}
+                <div style={{ marginBottom: 48, position: "relative" }}>
+                  {/* Watermark number bleeding out top-right */}
+                  <span
+                    aria-hidden
+                    style={{
+                      position: "absolute", right: "-7vw", top: "-0.34em",
+                      fontFamily: SERIF, fontStyle: "italic",
+                      fontSize: "clamp(9em, 28vw, 24em)", fontWeight: 800,
+                      color: "rgba(244,244,242,0.05)", lineHeight: 1,
+                      letterSpacing: "-0.05em", pointerEvents: "none", zIndex: 0,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    09
+                  </span>
+
+                  <motion.h1
+                    initial={{ opacity: 0, y: 70, filter: "blur(10px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ delay: 0.4, duration: 1.0, ease: EASE }}
+                    style={{
+                      fontFamily: SERIF, fontSize: "clamp(3.6em, 16vw, 14em)",
+                      fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 0.86,
+                      margin: 0, whiteSpace: "nowrap", position: "relative", zIndex: 1,
+                      textAlign: "center",
+                    }}
+                  >
+                    THEREFORE
+                  </motion.h1>
+
+                  <motion.h1
+                    initial={{ opacity: 0, y: 70, filter: "blur(10px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ delay: 0.56, duration: 1.0, ease: EASE }}
+                    style={{
+                      fontFamily: SERIF, fontStyle: "italic",
+                      fontSize: "clamp(2.6em, 11vw, 9.5em)",
+                      fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 0.9,
+                      margin: "0.06em 0 0", whiteSpace: "nowrap", position: "relative", zIndex: 1,
+                      textAlign: "center",
+                    }}
+                  >
+                    I&nbsp;CREATE<span style={{ color: LIME }}>;</span>
+                  </motion.h1>
+
                   <motion.div
                     initial={{ opacity: 0, filter: "blur(8px)" }}
                     animate={{ opacity: 1, filter: "blur(0px)" }}
                     transition={{ delay: 0.9, duration: 0.8, ease: EASE }}
-                    style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(1em, 2vw, 1.3em)", color: FAINT, marginTop: 20 }}
+                    style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: "clamp(1em, 2vw, 1.3em)", color: FAINT, marginTop: 26, position: "relative", zIndex: 1, textAlign: "center" }}
                   >
                     从需求，到交付 —{" "}
                     <span style={{ color: LIME }}>9 tools in production.</span>
@@ -989,25 +1244,11 @@ export default function App() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.1, duration: 0.7, ease: EASE }}
-                  style={{ fontSize: "clamp(0.92em, 1.4vw, 1.02em)", color: SUB, maxWidth: 560, lineHeight: 1.8, marginBottom: 56 }}
+                  style={{ fontSize: "clamp(0.92em, 1.4vw, 1.02em)", color: SUB, maxWidth: 760, lineHeight: 1.8, margin: "0 auto 56px", textAlign: "center" }}
                 >
                   不等资源 · 不限技术栈 · 快速交付。9 个 AI 项目交付落地，自建 GPU 算力平台。
                 </motion.p>
 
-                {/* Act 4 — stats */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.35, duration: 0.7, ease: EASE }}
-                  style={{ display: "flex", gap: "clamp(48px, 8vw, 96px)", flexWrap: "wrap", marginBottom: 72 }}
-                >
-                  {[
-                    { end: 9, suffix: "", lbl: "已交付项目" },
-                    { end: 2, suffix: " 月", lbl: "平均交付周期" },
-                  ].map((stat, i) => (
-                    <AnimatedNumber key={i} delay={1.5 + i * 0.2} {...stat} />
-                  ))}
-                </motion.div>
               </motion.div>
 
               {/* Act 5 — scroll hint */}
@@ -1111,35 +1352,17 @@ export default function App() {
                 ))}
               </div>
 
-              {/* Differentiators */}
-              <div style={{ marginTop: 96, maxWidth: 880, marginLeft: "auto", marginRight: "auto" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 10 }}>
+              {/* Differentiators — CoT → ToT → GoT graph */}
+              <div style={{ marginTop: 96 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 8 }}>
                   <span style={{ width: 44, height: 2, background: LIME, display: "inline-block" }} />
                   <span style={{ color: LIME, fontSize: "0.66em", letterSpacing: "0.24em", textTransform: "uppercase" }}>Core Strengths</span>
                 </div>
-                <div style={{ position: "relative", overflow: "hidden", padding: "8px 0 24px" }}>
-                  <span
-                    aria-hidden
-                    style={{
-                      position: "absolute", right: -16, top: -34,
-                      fontFamily: SERIF, fontStyle: "italic",
-                      fontSize: "clamp(5em, 13vw, 9.5em)", fontWeight: 800,
-                      color: "rgba(244,244,242,0.05)", letterSpacing: "-0.04em",
-                      lineHeight: 1, pointerEvents: "none", whiteSpace: "nowrap",
-                    }}
-                  >
-                    Full-Stack
-                  </span>
-                  <h2 style={{ position: "relative", zIndex: 1, fontFamily: SERIF, fontSize: "clamp(1.9em, 3.6vw, 2.6em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", margin: 0 }}>
-                    全栈工程核心能力
-                    <span style={{ fontStyle: "italic", fontWeight: 400, fontSize: "0.5em", color: FAINT, marginLeft: "0.6em" }}>Full-Stack Engineering</span>
-                  </h2>
-                </div>
-                <div>
-                  {DIFFS.map((d, i) => (
-                    <DiffStatement key={d.title} d={d} index={i} />
-                  ))}
-                </div>
+                <h2 style={{ fontFamily: SERIF, fontSize: "clamp(1.9em, 3.6vw, 2.6em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", margin: "0 0 8px" }}>
+                  全栈工程核心能力
+                  <span style={{ fontStyle: "italic", fontWeight: 400, fontSize: "0.5em", color: FAINT, marginLeft: "0.6em" }}>Full-Stack Engineering</span>
+                </h2>
+                <GraphView />
               </div>
 
               {/* Bottom CTA */}
@@ -1175,7 +1398,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35 }}
-            style={{ maxWidth: 1000, margin: "0 auto", padding: "140px 32px 80px" }}
+            style={{ padding: "140px clamp(20px, 4.5vw, 72px) 80px" }}
           >
             <div style={{ color: LIME, fontSize: "0.7em", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 16 }}>Projects</div>
             <h2 style={{ fontFamily: SERIF, fontSize: "clamp(1.8em, 4vw, 2.4em)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", marginBottom: 12 }}>每个项目解决一个真实痛点</h2>
