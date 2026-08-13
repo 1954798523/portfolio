@@ -1217,8 +1217,9 @@ export default function App() {
               style={{
                 position: "absolute", inset: 0, zIndex: 0,
                 backgroundImage: `url(${heroLight})`,
-                backgroundSize: "cover",
+                backgroundSize: "contain",
                 backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
               }}
             />
             {/* 暗色遮罩，保证标题可读 */}
@@ -1316,21 +1317,18 @@ export default function App() {
                       textAlign: "center",
                     }}
                   >
-                    {"I CREATE;".split("").map((ch, i) => {
-                      const semi = ch === ";";
-                      return (
+                    {"I CREATE".split("").map((ch, i) => (
                         <span key={i} style={{ display: "inline-block", overflow: "hidden", verticalAlign: "bottom" }}>
                           <motion.span
                             initial={{ y: "1.1em" }}
                             animate={{ y: 0 }}
                             transition={{ delay: 1.1 + i * 0.05, duration: 0.7, ease: EASE }}
-                            style={{ display: "inline-block", color: semi ? LIME : undefined }}
+                            style={{ display: "inline-block" }}
                           >
                             {ch === " " ? " " : ch}
                           </motion.span>
                         </span>
-                      );
-                    })}
+                    ))}
                   </h1>
 
                   <motion.div
